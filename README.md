@@ -2,7 +2,7 @@
 CPSC 433 AI
 And-Tree-Based Search Model for Slot Scheduling Games and Practices
 
-##Team Floette
+## Team Floette
 Darpal Patel
 
 Hasan Nassar
