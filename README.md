@@ -1,4 +1,2 @@
 # CPSC433-Project-Floette-
-AI (And-Tree) Slot Assignment Project
-
-.
+AI (And-Tree) scheduling.Slot assignments.Assignment Project
