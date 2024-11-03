@@ -12,7 +12,7 @@ public class Main {
         long startTime = System.currentTimeMillis();
 
         Data data = parseInput(args);
-
+        System.out.println(data);
 
         long endTime = System.currentTimeMillis();
         double duration = (endTime - startTime) / 1000.0;
@@ -21,6 +21,10 @@ public class Main {
     }
 
     private static Data parseInput(String[] args) throws FileNotFoundException {
+        if(args.length < 8) {
+            System.out.println("Invalid command line arguments.");
+            System.exit(0);
+        }
         int w_minfilled = Integer.parseInt(args[1]);
         int w_pref = Integer.parseInt(args[2]);
         int w_pair = Integer.parseInt(args[3]);
@@ -38,6 +42,7 @@ public class Main {
 
         sc.nextLine();
         String line;
+        //Game Slots
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replace(" ", "");
             String[] split = line.split(",");
@@ -56,6 +61,7 @@ public class Main {
             data.addGameSlot(new GameSlot(date, time, max, min));
         }
 
+        //Practice Slots
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replace(" ", "");
             String[] split = line.split(",");
@@ -74,16 +80,17 @@ public class Main {
             data.addPracticeSlot(new PracticeSlot(date, time, max, min));
         }
 
+        //Games
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            String identifier = line;
-            data.addGame(new Game(identifier));
+            data.addGame(new Game(line.replace("  ", " ")));
         }
 
+        //Practices
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            String identifier = line;
-            data.addPractice(new Practice(identifier));
+            data.addPractice(new Practice(line.replace("  ", " ")));
         }
 
+        //Not Compatible
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replace(" ", "");
             String[] split = line.split(",");
@@ -96,6 +103,7 @@ public class Main {
             }
         }
 
+        //Unwanted
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replace(" ", "");
             String[] split = line.split(",");
@@ -109,6 +117,7 @@ public class Main {
             }
         }
 
+        //Preferences
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replace(" ", "");
             String[] split = line.split(",");
@@ -126,6 +135,7 @@ public class Main {
             }
         }
 
+        //Pairs
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replace(" ", "");
             String[] split = line.split(",");
@@ -138,6 +148,7 @@ public class Main {
             }
         }
 
+        //Partials
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replace(" ", "");
             String[] split = line.split(",");
@@ -170,14 +181,14 @@ public class Main {
     private static Slot findSlot(String date, String time, ArrayList<GameSlot> gameSlots, ArrayList<PracticeSlot> pracSlots, boolean isGame) {
         if (isGame) {
             for (Slot sg : gameSlots) {
-                if (sg.getDate().toString().equals(date)
+                if (sg.getDay().getShortCode().equals(date)
                         && sg.getTime().equals(time)) {
                     return sg;
                 }
             }
         } else {
             for (Slot sp : pracSlots) {
-                if (sp.getDate().toString().equals(date)
+                if (sp.getDay().getShortCode().equals(date)
                         && sp.getTime().equals(time)) {
                     return sp;
                 }

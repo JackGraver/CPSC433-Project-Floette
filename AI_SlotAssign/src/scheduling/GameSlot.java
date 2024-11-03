@@ -12,6 +12,6 @@ public class GameSlot extends Slot {
     }
 
     public String toString() {
-        return super.toString() + " Game Slot";
+        return "[Game Slot] " + super.toString();
     }
 }

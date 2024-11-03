@@ -9,14 +9,14 @@ import java.util.ArrayList;
 public class Data {
     private final String problemName;
 
-    private int w_minfilled;
-    private int w_pref;
-    private int w_pair;
-    private int w_secdiff;
-    private int pen_gamemin;
-    private int pen_practicemin;
-    private int pen_notpaired;
-    private int pen_section;
+    private final int w_minfilled;
+    private final int w_pref;
+    private final int w_pair;
+    private final int w_secdiff;
+    private final int pen_gamemin;
+    private final int pen_practicemin;
+    private final int pen_notpaired;
+    private final int pen_section;
 
     private final ArrayList<GameSlot> gameSlots;
     private final ArrayList<PracticeSlot> practiceSlots;
@@ -50,9 +50,40 @@ public class Data {
         this.partials = new ArrayList<>();
     }
 
-
     public String getProblemName() {
         return problemName;
+    }
+
+    public int getW_minfilled() {
+        return w_minfilled;
+    }
+
+    public int getW_pref() {
+        return w_pref;
+    }
+
+    public int getW_pair() {
+        return w_pair;
+    }
+
+    public int getW_secdiff() {
+        return w_secdiff;
+    }
+
+    public int getPen_gamemin() {
+        return pen_gamemin;
+    }
+
+    public int getPen_practicemin() {
+        return pen_practicemin;
+    }
+
+    public int getPen_notpaired() {
+        return pen_notpaired;
+    }
+
+    public int getPen_section() {
+        return pen_section;
     }
 
     public ArrayList<GameSlot> getGameSlots() {
@@ -125,5 +156,56 @@ public class Data {
 
     public void addPartial(Partial partial) {
         partials.add(partial);
+    }
+
+    public String toString() {
+        StringBuilder o = new StringBuilder();
+        o.append(problemName).append(" Data:\n");
+
+        o.append("Game Slots:\n");
+        for(GameSlot s : gameSlots) {
+            o.append("\t").append(s).append("\n");
+        }
+        o.append("Practice Slots:\n");
+        for(PracticeSlot s : practiceSlots) {
+            o.append("\t").append(s).append("\n");
+        }
+
+        o.append("Games:\n");
+        for(Game g : games) {
+            o.append("\t").append(g).append("\n");
+        }
+
+        o.append("Practices:\n");
+        for(Practice p : practices) {
+            o.append("\t").append(p).append("\n");
+        }
+
+        o.append("Not Compatibles:\n");
+        for(NotCompatible np : notcompatibles) {
+            o.append("\t").append(np).append("\n");
+        }
+
+        o.append("Unwanted:\n");
+        for(Unwanted w : unwanteds) {
+            o.append("\t").append(w).append("\n");
+        }
+
+        o.append("Preferences:\n");
+        for(Preference p : preferences) {
+            o.append("\t").append(p).append("\n");
+        }
+
+        o.append("Pairs:\n");
+        for(Pair p : pairs) {
+            o.append("\t").append(p).append("\n");
+        }
+
+        o.append("Partial Assignments:\n");
+        for(Partial p : partials) {
+            o.append("\t").append(p).append("\n");
+        }
+
+        return o.toString();
     }
 }

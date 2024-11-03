@@ -9,6 +9,6 @@ public class Pair extends GameConstraint {
 
     @Override
     public String toString() {
-        return getActivityOne() + " paired with " + getActivityTwo();
+        return getActivityOne() + " with " + getActivityTwo();
     }
 }

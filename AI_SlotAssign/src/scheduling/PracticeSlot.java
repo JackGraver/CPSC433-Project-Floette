@@ -13,6 +13,6 @@ public class PracticeSlot extends Slot {
     }
 
     public String toString() {
-        return super.toString() + " Prac Slot";
+        return "[Practice Slot] " +  super.toString();
     }
 }

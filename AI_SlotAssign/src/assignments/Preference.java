@@ -17,6 +17,6 @@ public class Preference extends Assignment {
 
     @Override
     public String toString() {
-        return getActivity().getIdentifier() + " prefers " + getSlot();
+        return getActivity().getIdentifier() + " prefers " + getSlot() + " with preference: " + preferenceValue;
     }
 }

@@ -12,7 +12,6 @@ public abstract class Activity {
     public Activity(String identifier) {
         this.identifier = identifier;
         this.trimId = identifier.replace(" ", "");
-        System.out.println(identifier + " vs " + trimId);
 //        parse(identifier);
     }
 

@@ -8,6 +8,6 @@ public class NotCompatible extends GameConstraint {
     }
 
     public String toString() {
-        return getActivityOne() + " not compatible with " + getActivityTwo();
+        return getActivityOne() + " with " + getActivityTwo();
     }
 }

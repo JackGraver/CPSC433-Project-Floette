@@ -3,24 +3,24 @@ package scheduling;
 import enums.Days;
 
 public abstract class Slot {
-    private Days date;
+    private Days day;
     private String time;
     private int max;
     private int min;
 
-    public Slot(Days date, String time, int max, int min) {
-        this.date = date;
+    public Slot(Days day, String time, int max, int min) {
+        this.day = day;
         this.time = time;
         this.max = max;
         this.min = min;
     }
 
-    public Days getDate() {
-        return date;
+    public Days getDay() {
+        return day;
     }
 
-    public void setDate(Days date) {
-        this.date = date;
+    public void setDay(Days day) {
+        this.day = day;
     }
 
     public String getTime() {
@@ -48,7 +48,7 @@ public abstract class Slot {
     }
 
     public String toString() {
-        return time + " | " + max + ", " + min;
+        return day + " @"+time + " | Max Filled: "+max + ", Min Filed: "+min;
     }
 
 }
