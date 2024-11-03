@@ -1,21 +1,21 @@
 package assignments;
 
-import scheduling.Game;
+import scheduling.Activity;
 
 public abstract class GameConstraint {
-    private Game game1;
-    private Game game2;
+    private Activity activityOne;
+    private Activity activityTwo;
 
-    public GameConstraint(Game game1, Game game2) {
-        this.game1 = game1;
-        this.game2 = game2;
+    public GameConstraint(Activity activityOne, Activity activityTwo) {
+        this.activityOne = activityOne;
+        this.activityTwo = activityTwo;
     }
 
-    public Game getGame1() {
-        return game1;
+    public Activity getActivityOne() {
+        return activityOne;
     }
 
-    public Game getGame2() {
-        return game2;
+    public Activity getActivityTwo() {
+        return activityTwo;
     }
 }

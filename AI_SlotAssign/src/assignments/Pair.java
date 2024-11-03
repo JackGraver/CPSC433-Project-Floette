@@ -1,9 +1,14 @@
 package assignments;
 
-import scheduling.Game;
+import scheduling.Activity;
 
 public class Pair extends GameConstraint {
-    public Pair(Game game1, Game game2) {
-        super(game1, game2);
+    public Pair(Activity activityOne, Activity activityTwo) {
+        super(activityOne, activityTwo);
+    }
+
+    @Override
+    public String toString() {
+        return getActivityOne() + " paired with " + getActivityTwo();
     }
 }

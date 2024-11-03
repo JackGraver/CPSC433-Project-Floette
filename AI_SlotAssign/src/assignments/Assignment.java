@@ -1,18 +1,19 @@
 package assignments;
 
+import scheduling.Activity;
 import scheduling.Slot;
 
-public class Assignment {
-    private String gameIdentifier;
+public abstract class Assignment {
+    private Activity activity;
     private Slot slot;
 
-    public Assignment(String gameIdentifier, Slot slot) {
-        this.gameIdentifier = gameIdentifier;
+    public Assignment(Activity activity, Slot slot) {
+        this.activity = activity;
         this.slot = slot;
     }
 
-    public String getGameIdentifier() {
-        return gameIdentifier;
+    public Activity getActivity() {
+        return activity;
     }
 
     public Slot getSlot() {

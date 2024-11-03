@@ -1,9 +1,13 @@
 package assignments;
 
-import scheduling.Game;
+import scheduling.Activity;
 
 public class NotCompatible extends GameConstraint {
-    public NotCompatible(Game game1, Game game2) {
-        super(game1, game2);
+    public NotCompatible(Activity activityOne, Activity activityTwo) {
+        super(activityOne, activityTwo);
+    }
+
+    public String toString() {
+        return getActivityOne() + " not compatible with " + getActivityTwo();
     }
 }

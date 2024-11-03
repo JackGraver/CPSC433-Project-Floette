@@ -1,6 +1,6 @@
 package enums;
 
-public enum Date {
+public enum Days {
     MO,
     TU,
     FR,

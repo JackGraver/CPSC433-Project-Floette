@@ -1,9 +1,15 @@
 package assignments;
 
+import scheduling.Activity;
 import scheduling.Slot;
 
 public class Unwanted extends Assignment {
-    public Unwanted(String gameIdentifier, Slot slot) {
-        super(gameIdentifier, slot);
+    public Unwanted(Activity activity, Slot slot) {
+        super(activity, slot);
+    }
+
+    @Override
+    public String toString() {
+        return getActivity().getIdentifier() + " does not want slot " + getSlot().toString();
     }
 }
