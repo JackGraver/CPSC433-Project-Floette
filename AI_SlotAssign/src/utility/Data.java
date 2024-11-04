@@ -1,3 +1,5 @@
+package utility;
+
 import assignments.*;
 import scheduling.Game;
 import scheduling.GameSlot;
@@ -160,7 +162,7 @@ public class Data {
 
     public String toString() {
         StringBuilder o = new StringBuilder();
-        o.append(problemName).append(" Data:\n");
+        o.append(problemName).append(" utility.Data:\n");
 
         o.append("Game Slots:\n");
         for(GameSlot s : gameSlots) {
