@@ -35,18 +35,20 @@ public abstract class Activity {
         return identifier;
     }
 
-//    public int compareTo(Activity other) {
-//        int c;
-//
-//        if ((c = this.league.compareTo(other.league)) != 0) {
-//            return c; // Return comparison result of league
-//        }
-//
-//        if ((c = this.ageGroup.compareTo(other.ageGroup)) != 0) {
-//            return c; // Return comparison result of ageGroup
-//        }
-//
-//        // Use Integer.compare for division comparison
-//        return Integer.compare(this.division, other.division);
-//    }
+    public String getLeague() {
+        return league;
+    }
+
+    public String getAgeGroup() {
+        return ageGroup;
+    }
+
+    public int getDivision() {
+        return division;
+    }
+
+    public String getLeagueAgeGroupDivision() {
+        return league + " " + ageGroup + " " + division;
+    }
+
 }
