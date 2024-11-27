@@ -5,15 +5,12 @@ import java.util.ArrayList;
 
 public class ANode {
     private Sol sol;
-    private ArrayList<ArrayList<Activity>> slots;
+    private ArrayList<Slot> slots;
     private ArrayList<ANode> children;
 
-    public ANode(int numSlots) {
+    public ANode(ArrayList<Slot> slots) {
         sol = Sol.none;
-        slots = new ArrayList<>();
-        for(int i = 0; i < numSlots; i++) {
-            slots.add(new ArrayList<>());
-        }
+        this.slots = slots;
         children = new ArrayList<>();
     }
 
@@ -25,11 +22,11 @@ public class ANode {
         this.sol = sol;
     }
 
-    public ArrayList<ArrayList<Activity>> getSlots() {
+    public ArrayList<Slot> getSlots() {
         return slots;
     }
 
-    public void setSlots(ArrayList<ArrayList<Activity>> slots) {
+    public void setSlots(ArrayList<Slot> slots) {
         this.slots = slots;
     }
 
@@ -38,7 +35,7 @@ public class ANode {
     }
 
     public ANode addChild() {
-        children.add(new ANode(slots.size()));
+        children.add(new ANode(slots));
         return children.get(children.size() - 1);
     }
 
@@ -52,9 +49,9 @@ public class ANode {
         sb.append("(");
         for (int i = 0; i < slots.size(); i++) {
             sb.append("{");
-            for (int j = 0; j < slots.get(i).size(); j++) {
-                sb.append(slots.get(i).get(j));
-                if (j < slots.get(i).size() - 1) {
+            for (int j = 0; j < slots.get(i).getActivities().size(); j++) {
+                sb.append(slots.get(i).getActivities().get(j));
+                if (j < slots.get(i).getActivities().size() - 1) {
                     sb.append(", ");
                 }
             }
@@ -64,6 +61,9 @@ public class ANode {
             }
         }
         sb.append(")");
+        for (ANode n : getChildren()) {
+            sb.append("\n\t").append(n.toString());
+        }
         return sb.toString();
     }
 }

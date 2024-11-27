@@ -94,6 +94,7 @@ public class Setup {
 
             if (a1 != null && a2 != null) {
                 data.addCompatible(new NotCompatible(a1, a2));
+                data.addCompatible(new NotCompatible(a2, a1));
             }
         }
 
