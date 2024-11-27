@@ -9,7 +9,7 @@ public class PracticeSlot extends Slot {
     private ArrayList<Practice> practices = new ArrayList<>();
 
     public PracticeSlot(Days date, String time, int max, int min) {
-        super(date, time, max, min);
+        super(null, date, time, max, min);
     }
 
     public String toString() {

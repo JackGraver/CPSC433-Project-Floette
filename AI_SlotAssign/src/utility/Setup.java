@@ -40,6 +40,8 @@ public class Setup {
             Days date = switch (split[0]) {
                 case "MO" -> Days.MO;
                 case "TU" -> Days.TU;
+                case "WE" -> Days.WE;
+                case "TR" -> Days.TR;
                 case "FR" -> Days.FR;
                 default -> null;
             };
@@ -48,7 +50,7 @@ public class Setup {
             int max = Integer.parseInt(split[2]);
             int min = Integer.parseInt(split[3]);
 
-            data.addGameSlot(new GameSlot(date, time, max, min));
+            data.addSlot(new GameSlot(date, time, max, min));
         }
 
         //Practice Slots
@@ -59,6 +61,8 @@ public class Setup {
             Days date = switch (split[0]) {
                 case "MO" -> Days.MO;
                 case "TU" -> Days.TU;
+                case "WE" -> Days.WE;
+                case "TR" -> Days.TR;
                 case "FR" -> Days.FR;
                 default -> null;
             };
@@ -67,17 +71,17 @@ public class Setup {
             int max = Integer.parseInt(split[2]);
             int min = Integer.parseInt(split[3]);
 
-            data.addPracticeSlot(new PracticeSlot(date, time, max, min));
+            data.addSlot(new PracticeSlot(date, time, max, min));
         }
 
         //Games
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            data.addGame(new Game(line.replace("  ", " ")));
+            data.addActivity(new Game(line.replace("  ", " ")));
         }
 
         //Practices
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            data.addPractice(new Practice(line.replace("  ", " ")));
+            data.addActivity(new Practice(line.replace("  ", " ")));
         }
 
         //Not Compatible
@@ -85,8 +89,8 @@ public class Setup {
             line = line.replace(" ", "");
             String[] split = line.split(",");
 
-            Activity a1 = findActivity(split[0], data.getGames(), data.getPractices());
-            Activity a2 = findActivity(split[1], data.getGames(), data.getPractices());
+            Activity a1 = findActivity(split[0], data.getActivities());
+            Activity a2 = findActivity(split[1], data.getActivities());
 
             if (a1 != null && a2 != null) {
                 data.addCompatible(new NotCompatible(a1, a2));
@@ -98,9 +102,9 @@ public class Setup {
             line = line.replace(" ", "");
             String[] split = line.split(",");
 
-            Activity a = findActivity(split[0], data.getGames(), data.getPractices());
+            Activity a = findActivity(split[0], data.getActivities());
 
-            Slot s = findSlot(split[1], split[2], data.getGameSlots(), data.getPracticeSlots(), a instanceof Game);
+            Slot s = findSlot(split[1], split[2], data.getSlots(), a instanceof Game);
 
             if (a != null && s != null) {
                 data.addUnwanted(new Unwanted(a, s));
@@ -117,8 +121,8 @@ public class Setup {
             String activityID = split[2];
             int preference = Integer.parseInt(split[3]);
 
-            Activity a = findActivity(activityID, data.getGames(), data.getPractices());
-            Slot s = findSlot(day, time, data.getGameSlots(), data.getPracticeSlots(), a instanceof Game);
+            Activity a = findActivity(activityID, data.getActivities());
+            Slot s = findSlot(day, time, data.getSlots(), a instanceof Game);
 
             if (a != null && s != null) {
                 data.addPreference(new Preference(a, s, preference));
@@ -130,8 +134,8 @@ public class Setup {
             line = line.replace(" ", "");
             String[] split = line.split(",");
 
-            Activity a1 = findActivity(split[0], data.getGames(), data.getPractices());
-            Activity a2 = findActivity(split[1], data.getGames(), data.getPractices());
+            Activity a1 = findActivity(split[0], data.getActivities());
+            Activity a2 = findActivity(split[1], data.getActivities());
 
             if (a1 != null && a2 != null) {
                 data.addPair(new Pair(a1, a2));
@@ -143,9 +147,9 @@ public class Setup {
             line = line.replace(" ", "");
             String[] split = line.split(",");
 
-            Activity a = findActivity(split[0], data.getGames(), data.getPractices());
+            Activity a = findActivity(split[0], data.getActivities());
 
-            Slot s = findSlot(split[1], split[2], data.getGameSlots(), data.getPracticeSlots(), a instanceof Game);
+            Slot s = findSlot(split[1], split[2], data.getSlots(), a instanceof Game);
 
             if (a != null && s != null) {
                 data.addPartial(new Partial(a, s));
@@ -154,36 +158,42 @@ public class Setup {
         return data;
     }
 
-    private static Activity findActivity(String identifier, ArrayList<Game> games, ArrayList<Practice> practices) {
-        for (Game g : games) {
-            if (g.getTrimID().equals(identifier)) {
-                return g;
+    private static Activity findActivity(String identifier, ArrayList<Activity> activities) {
+        for (Activity a : activities) {
+            if (a.getTrimID().equals(identifier)) {
+                return a;
             }
         }
-        for (Practice p : practices) {
-            if (p.getTrimID().equals(identifier)) {
-                return p;
-            }
-        }
+//        for (Practice p : practices) {
+//            if (p.getTrimID().equals(identifier)) {
+//                return p;
+//            }
+//        }
         return null;
     }
 
-    private static Slot findSlot(String date, String time, ArrayList<GameSlot> gameSlots, ArrayList<PracticeSlot> pracSlots, boolean isGame) {
-        if (isGame) {
-            for (Slot sg : gameSlots) {
-                if (sg.getDay().getShortCode().equals(date)
-                        && sg.getTime().equals(time)) {
-                    return sg;
+    private static Slot findSlot(String date, String time, ArrayList<Slot> slots, boolean isGame) {
+//        if (isGame) {
+//            for (Slot sg : gameSlots) {
+//                if (sg.getDay().getShortCode().equals(date)
+//                        && sg.getTime().equals(time)) {
+//                    return sg;
+//                }
+//            }
+//        } else {
+//            for (Slot sp : pracSlots) {
+//                if (sp.getDay().getShortCode().equals(date)
+//                        && sp.getTime().equals(time)) {
+//                    return sp;
+//                }
+//            }
+//        }
+            for (Slot s : slots) {
+                if (s.getDay().getShortCode().equals(date)
+                        && s.getTime().equals(time)) {
+                    return s;
                 }
             }
-        } else {
-            for (Slot sp : pracSlots) {
-                if (sp.getDay().getShortCode().equals(date)
-                        && sp.getTime().equals(time)) {
-                    return sp;
-                }
-            }
-        }
         return null;
     }
 }

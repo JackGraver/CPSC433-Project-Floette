@@ -1,10 +1,7 @@
 package utility;
 
 import assignments.*;
-import scheduling.Game;
-import scheduling.GameSlot;
-import scheduling.Practice;
-import scheduling.PracticeSlot;
+import scheduling.*;
 
 import java.util.ArrayList;
 
@@ -20,10 +17,12 @@ public class Data {
     private final int pen_notpaired;
     private final int pen_section;
 
-    private final ArrayList<GameSlot> gameSlots;
-    private final ArrayList<PracticeSlot> practiceSlots;
-    private final ArrayList<Game> games;
-    private final ArrayList<Practice> practices;
+//    private final ArrayList<GameSlot> gameSlots;
+//    private final ArrayList<PracticeSlot> practiceSlots;
+    private final ArrayList<Slot> slots;
+//    private final ArrayList<Game> games;
+//    private final ArrayList<Practice> practices;
+    private final ArrayList<Activity> activities;
     private final ArrayList<NotCompatible> notcompatibles;
     private final ArrayList<Unwanted> unwanteds;
     private final ArrayList<Preference> preferences;
@@ -41,10 +40,12 @@ public class Data {
         this.pen_practicemin = pen_practicemin;
         this.pen_notpaired = pen_notpaired;
         this.pen_section = pen_section;
-        this.gameSlots = new ArrayList<>();
-        this.practiceSlots = new ArrayList<>();
-        this.games = new ArrayList<>();
-        this.practices = new ArrayList<>();
+        this.slots = new ArrayList<>();
+        this.activities = new ArrayList<>();
+//        this.gameSlots = new ArrayList<>();
+//        this.practiceSlots = new ArrayList<>();
+//        this.games = new ArrayList<>();
+//        this.practices = new ArrayList<>();
         this.notcompatibles = new ArrayList<>();
         this.unwanteds = new ArrayList<>();
         this.preferences = new ArrayList<>();
@@ -88,21 +89,37 @@ public class Data {
         return pen_section;
     }
 
-    public ArrayList<GameSlot> getGameSlots() {
-        return gameSlots;
+    public ArrayList<Slot> getSlots() {
+        return slots;
     }
 
-    public ArrayList<PracticeSlot> getPracticeSlots() {
-        return practiceSlots;
+    public void addSlot(Slot s) {
+        slots.add(s);
     }
 
-    public ArrayList<Game> getGames() {
-        return games;
+    public ArrayList<Activity> getActivities() {
+        return activities;
     }
 
-    public ArrayList<Practice> getPractices() {
-        return practices;
+    public void addActivity(Activity a) {
+        activities.add(a);
     }
+
+    //    public ArrayList<GameSlot> getGameSlots() {
+//        return gameSlots;
+//    }
+//
+//    public ArrayList<PracticeSlot> getPracticeSlots() {
+//        return practiceSlots;
+//    }
+//
+//    public ArrayList<Game> getGames() {
+//        return games;
+//    }
+//
+//    public ArrayList<Practice> getPractices() {
+//        return practices;
+//    }
 
     public ArrayList<NotCompatible> getNotcompatibles() {
         return notcompatibles;
@@ -124,21 +141,21 @@ public class Data {
         return partials;
     }
 
-    public void addGameSlot(GameSlot gameSlot) {
-        gameSlots.add(gameSlot);
-    }
-
-    public void addPracticeSlot(PracticeSlot practiceSlot) {
-        practiceSlots.add(practiceSlot);
-    }
-
-    public void addGame(Game game) {
-        games.add(game);
-    }
-
-    public void addPractice(Practice practice) {
-        practices.add(practice);
-    }
+//    public void addGameSlot(GameSlot gameSlot) {
+//        gameSlots.add(gameSlot);
+//    }
+//
+//    public void addPracticeSlot(PracticeSlot practiceSlot) {
+//        practiceSlots.add(practiceSlot);
+//    }
+//
+//    public void addGame(Game game) {
+//        games.add(game);
+//    }
+//
+//    public void addPractice(Practice practice) {
+//        practices.add(practice);
+//    }
 
     public void addCompatible(NotCompatible compatible) {
         notcompatibles.add(compatible);
@@ -164,24 +181,30 @@ public class Data {
         StringBuilder o = new StringBuilder();
         o.append(problemName).append(" utility.Data:\n");
 
-        o.append("Game Slots:\n");
-        for(GameSlot s : gameSlots) {
+        o.append("Slots:\n");
+        for(Slot s : slots) {
             o.append("\t").append(s).append("\n");
         }
-        o.append("Practice Slots:\n");
-        for(PracticeSlot s : practiceSlots) {
-            o.append("\t").append(s).append("\n");
-        }
+//        for(GameSlot s : gameSlots) {
+//            o.append("\t").append(s).append("\n");
+//        }
+//        o.append("Practice Slots:\n");
+//        for(PracticeSlot s : practiceSlots) {
+//            o.append("\t").append(s).append("\n");
+//        }
 
-        o.append("Games:\n");
-        for(Game g : games) {
-            o.append("\t").append(g).append("\n");
+        o.append("Activities:\n");
+        for(Activity a : activities) {
+            o.append("\t").append(a).append("\n");
         }
-
-        o.append("Practices:\n");
-        for(Practice p : practices) {
-            o.append("\t").append(p).append("\n");
-        }
+//        for(Game g : games) {
+//            o.append("\t").append(g).append("\n");
+//        }
+//
+//        o.append("Practices:\n");
+//        for(Practice p : practices) {
+//            o.append("\t").append(p).append("\n");
+//        }
 
         o.append("Not Compatibles:\n");
         for(NotCompatible np : notcompatibles) {

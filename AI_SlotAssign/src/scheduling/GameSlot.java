@@ -8,7 +8,7 @@ public class GameSlot extends Slot {
     private ArrayList<Game> games = new ArrayList<>();
 
     public GameSlot(Days date, String time, int max, int min) {
-        super(date, time, max, min);
+        super(null, date, time, max, min);
     }
 
     public String toString() {

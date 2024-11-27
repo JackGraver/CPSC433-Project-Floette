@@ -3,6 +3,8 @@ package enums;
 public enum Days {
     MO("Monday"),
     TU("Tuesday"),
+    WE("Wednesday"),
+    TR("Thursday"),
     FR("Friday");
 
     private final String dayName;
