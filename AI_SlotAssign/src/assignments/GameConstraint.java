@@ -18,4 +18,5 @@ public abstract class GameConstraint {
     public Activity getActivityTwo() {
         return activityTwo;
     }
+
 }

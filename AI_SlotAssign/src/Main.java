@@ -1,8 +1,8 @@
-import assignments.Assignment;
-import assignments.NotCompatible;
+
 import scheduling.ANode;
 import scheduling.Activity;
-import scheduling.ActivityAssignment;
+import scheduling.Game;
+import scheduling.Practice;
 import scheduling.Slot;
 import utility.Data;
 import utility.Setup;
@@ -10,106 +10,186 @@ import utility.Setup;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import assignments.NotCompatible;
+import assignments.Partial;
+import assignments.Unwanted;
+
+
 public class Main {
 
     private static Data data;
     private static ANode root;
 
     public static void main(String[] args) throws Exception {
-        long startTime = System.currentTimeMillis();
+        // long startTime = System.currentTimeMillis();
 
-        System.out.println("Loading data from file.");
+        // System.out.println("Loading data from file.");
 
         data = Setup.setup(args);
-//        System.out.println(data);
 
-        long endTime = System.currentTimeMillis();
-        double duration = (endTime - startTime) / 1000.0;
+        // long endTime = System.currentTimeMillis();
+        // double duration = (endTime - startTime) / 1000.0;
 
-        System.out.println("Data loading complete.\n\tExecution time in milliseconds: " + duration);
+        // System.out.println("Data loading complete.\n\tExecution time in milliseconds: " + duration);
 
-        root = new ANode(data.getActivities().size());
+        root = new ANode(data.getSlots().size());
 
         System.out.println(root);
 
         div(root);
-
-
-//        int i = 0;
-//        while(i < 1) {
-//            ActivityAssignment aa = f_trans();
-//            if(aa.getActivity() == null && aa.getSlot() == null) {
-//                break;
-//            }
-//            Slot s = assignments.get(assignments.indexOf(aa.getSlot()));
-//            s.getActivities().add(aa.getActivity());
-//
-//            printAssignments();
-//            i++;
-//        }
+        System.exit(0);
     }
-
-//    private static void printAssignments() {
-//        System.out.print("\n\n(");
-//        for(Slot s : assignments) {
-//            System.out.print("{");
-//            for(Activity a : s.getActivities()) {
-//                System.out.print(a);
-//            }
-//            System.out.print("}");
-//        }
-//        System.out.print(")\n");
-//    }
-
 
     private static void div(ANode node) {
+        boolean allSlotsFilled = true;
+        for (ArrayList<Activity> slot : node.getSlots()) {
+            if (slot.size() != data.getSlots().get(node.getSlots().indexOf(slot)).getMin()) {
+                allSlotsFilled = false;
+                break; 
+            }
+        }
+    
+        if (allSlotsFilled || data.getActivities().isEmpty()) {
+            System.out.println("All slots are filled or no activities left. Ending.");
+            System.out.println("Finished Tree:" + "\n" + node);
+            return; 
+        }
+    
         System.out.println("Currently updating node: " + node + "\n");
         Activity curr = f_trans();
-        System.out.println("Assigning activity : " + curr);
+        if (curr == null) {
+            System.out.println("No more activities to assign. Ending.");
+            return;
+        }
+    
+        System.out.println("Assigning activity: " + curr);
+    
+        for (ArrayList<Activity> slot : node.getSlots()) {
+            slot.add(curr);
+            if (violatesHardConstraints(node, slot)) {
+                slot.remove(curr); 
+                continue; 
 
-        ANode child1 = node.addChild();
-        child1.getSlots().get(0).add(curr);
+            } else {
 
-        ANode child2 = node.addChild();
-        child2.getSlots().get(1).add(curr);
+                if (!data.getPartials().isEmpty()) {
+                    data.getPartials().remove(0);
+                } else if (!data.getActivities().isEmpty()) {
+                    data.getActivities().remove(0);
+                }
 
-        ANode child3 = node.addChild();
-        child3.getSlots().get(2).add(curr);
-
-        ANode child4 = node.addChild();
-        child4.getSlots().get(3).add(curr);
-
-        System.out.println(node);
-        for(ANode c : node.getChildren()) {
-            System.out.println("\t" + c);
+                System.out.println("Activity assigned to slot: " + slot + "\n");
+                ANode child = node.addChild();
+                child.setSlots(node.getSlots());
+                div(child); 
+                break; 
+            }
         }
     }
-
-    private static boolean checkAssign(Activity a) {
+    
+    private static boolean gameMaxCheck(ANode node, ArrayList<Activity> slot) {
+            int gameCount = 0;
+            for (Activity activity : slot) {
+                if (activity instanceof Game) {
+                    gameCount++;
+                    if (gameCount > 1) {
+                    System.out.println("Violated Game Count");
+                    return true;
+                    }
+                }
+            } 
         return false;
     }
 
-    private static void f_leaf() {}
+    private static boolean practiceMaxCheck(ANode node, ArrayList<Activity> slot) {
+            int practiceCount = 0;
+            for (Activity activity : slot) {
+                if (activity instanceof Practice) {
+                    practiceCount++;
+                    if (practiceCount > 1) {
+                    System.out.println("Violated Practice Count");
+                    return true;
+                    }
+                }
+            } 
+        return false;
+    }
+
+    private static boolean checkPracGameConflict(ANode node, ArrayList<Activity> slot) {
+            HashSet<String> pracDiv = new HashSet<>();
+            HashSet<String> gameDiv = new HashSet<>();
+        
+            for (Activity activity : slot) {
+                String[] parts = activity.getIdentifier().split(" ");
+                String leagueAgeGroupDivision = parts[0] + " " + parts[1] + " " + parts[2];
+                if (activity instanceof Practice) {
+                    pracDiv.add(leagueAgeGroupDivision);
+                } else if (activity instanceof Game) {
+                    gameDiv.add(leagueAgeGroupDivision);
+                }
+            }
+            for (String div : pracDiv) {
+                if (gameDiv.contains(div)) {
+                    System.out.println("Violated Practice Game Conflict");
+                    return true;
+                }
+        }
+        return false;
+    }
+
+    private static boolean violatesNotCompatible(ANode node, ArrayList<Activity> slot) {
+        for (NotCompatible nc : data.getNotcompatibles()) {
+                if (slot.contains(nc.getActivityOne()) && slot.contains(nc.getActivityTwo())) {
+                    System.out.println("Violated Not Compatible");
+                    return true;
+                }
+            }
+        return false;
+    }
+
+    private static boolean violatesPartAssign(ANode node, ArrayList<Activity> slot) {
+        for (Partial partial : data.getPartials()) {
+            Activity activity = partial.getActivity();
+            boolean isAssignedCorrectly = false;
+            if (slot.contains(activity)) {
+                isAssignedCorrectly = true;
+                break;
+            }
+            if (!isAssignedCorrectly) {
+                System.out.println("Violated Partial Assign for activity: " + activity);
+                return true;
+        }
+    }
+        return false; 
+    }
+
+    
+    private static boolean violatesUnwanted(ANode node, ArrayList<Activity> slot) {
+        for (Unwanted unwanted : data.getUnwanteds()){
+            Activity activity = unwanted.getActivity();
+            Slot unwantedSlot = unwanted.getSlot();
+                if (slot.contains(activity) && data.getSlots().get(node.getSlots().indexOf(slot)).equals(unwantedSlot)){
+                    System.out.println("Violated Unwanted");
+                    return true;
+                }
+        }
+        return false;
+    }
+
+    private static boolean violatesHardConstraints(ANode node, ArrayList<Activity> slot) {
+        return gameMaxCheck(node, slot) || practiceMaxCheck(node, slot) || checkPracGameConflict(node, slot) || violatesNotCompatible(node, slot)  || violatesPartAssign(node, slot) || violatesUnwanted(node, slot);
+    }
 
     private static Activity f_trans() {
-//        ActivityAssignment chosen = new ActivityAssignment();
-        //1
-
-        //2
-
-        //3
-
-        //3.1 & 3.2
         if(!data.getPartials().isEmpty()) {
-            return data.getPartials().get(0).getActivity();
+            Activity activity = data.getPartials().get(0).getActivity();
+            return activity;
         }
 
-        //3.3 & 3.4
-
-        //3.5 && 3.6
-//        if(data.getNotcompatibles().size() != 0) {
-//            return data.getNotcompatibles().get(0).getActivityOne();
-//        }
+        if (!data.getActivities().isEmpty()) {
+            Activity activity = data.getActivities().get(0);
+            return activity;
+        }
         return null;
     }
 

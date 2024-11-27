@@ -42,23 +42,28 @@ public class ANode {
         return children.get(children.size() - 1);
     }
 
+    public boolean isLeaf() {
+        return children.isEmpty();
+    }
+   
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append("(");
-
-        for(ArrayList<Activity> sL : slots) {
-            s.append("{");
-            for(Activity a : sL) {
-                s.append(a);
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+        for (int i = 0; i < slots.size(); i++) {
+            sb.append("{");
+            for (int j = 0; j < slots.get(i).size(); j++) {
+                sb.append(slots.get(i).get(j));
+                if (j < slots.get(i).size() - 1) {
+                    sb.append(", ");
+                }
             }
-            s.append("}, ");
+            sb.append("}");
+            if (i < slots.size() - 1) {
+                sb.append(", ");
+            }
         }
-        s.deleteCharAt(s.length()-1);
-        s.deleteCharAt(s.length()-1);
-        s.append("),");
-        s.append(sol.getSol());
-
-        return s.toString();
+        sb.append(")");
+        return sb.toString();
     }
 }
