@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class Setup {
     public static Data setup(String[] args) throws FileNotFoundException {
-        if(args.length < 8) {
+        if (args.length < 8) {
             System.out.println("Invalid command line arguments.");
             System.exit(0);
         }
@@ -94,7 +94,6 @@ public class Setup {
 
             if (a1 != null && a2 != null) {
                 data.addCompatible(new NotCompatible(a1, a2));
-                data.addCompatible(new NotCompatible(a2, a1));
             }
         }
 
@@ -189,12 +188,12 @@ public class Setup {
 //                }
 //            }
 //        }
-            for (Slot s : slots) {
-                if (s.getDay().getShortCode().equals(date)
-                        && s.getTime().equals(time)) {
-                    return s;
-                }
+        for (Slot s : slots) {
+            if (s.getDay().getShortCode().equals(date)
+                    && s.getTime().equals(time)) {
+                return s;
             }
+        }
         return null;
     }
 }

@@ -97,7 +97,7 @@ public class Data {
         activities.add(a);
     }
 
-    public ArrayList<NotCompatible> getNotcompatibles() {
+    public ArrayList<NotCompatible> getNotCompatibles() {
         return notcompatibles;
     }
 
@@ -137,42 +137,51 @@ public class Data {
         partials.add(partial);
     }
 
+
+    public void removeAllActivity(Activity a) {
+        partials.removeIf(p -> p.getActivity() == a);
+//        notcompatibles.removeIf(nc -> nc.getActivityOne() == a);
+//        notcompatibles.removeIf(nc -> nc.getActivityTwo() == a);
+        unwanteds.removeIf(un -> un.getActivity() == a);
+        preferences.removeIf(p -> p.getActivity() == a);
+    }
+
     public String toString() {
         StringBuilder o = new StringBuilder();
         o.append(problemName).append(" utility.Data:\n");
 
         o.append("Slots:\n");
-        for(Slot s : slots) {
+        for (Slot s : slots) {
             o.append("\t").append(s).append("\n");
         }
 
         o.append("Activities:\n");
-        for(Activity a : activities) {
+        for (Activity a : activities) {
             o.append("\t").append(a).append("\n");
         }
 
         o.append("Not Compatibles:\n");
-        for(NotCompatible np : notcompatibles) {
+        for (NotCompatible np : notcompatibles) {
             o.append("\t").append(np).append("\n");
         }
 
         o.append("Unwanted:\n");
-        for(Unwanted w : unwanteds) {
+        for (Unwanted w : unwanteds) {
             o.append("\t").append(w).append("\n");
         }
 
         o.append("Preferences:\n");
-        for(Preference p : preferences) {
+        for (Preference p : preferences) {
             o.append("\t").append(p).append("\n");
         }
 
         o.append("Pairs:\n");
-        for(Pair p : pairs) {
+        for (Pair p : pairs) {
             o.append("\t").append(p).append("\n");
         }
 
         o.append("Partial Assignments:\n");
-        for(Partial p : partials) {
+        for (Partial p : partials) {
             o.append("\t").append(p).append("\n");
         }
 

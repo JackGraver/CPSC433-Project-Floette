@@ -44,7 +44,7 @@ public class MainTests {
     }
 
     @Test
-    public void testPartAssign() {
+    public void testPartAssign_ftrans() {
         Main.data = data;
         Activity res = Main.f_trans();
 
@@ -54,12 +54,12 @@ public class MainTests {
     }
 
     @Test
-    public void testAssociatedActivity() {
+    public void testAssociatedActivity_ftrans() {
 
     }
 
     @Test
-    public void testNotCompatible() {
+    public void testNotCompatible_ftrans() {
         Main.f_trans();
 
         Activity res = Main.f_trans();
@@ -69,7 +69,7 @@ public class MainTests {
     }
 
     @Test
-    public void testUnwanted() {
+    public void testUnwanted_ftrans() {
         Main.f_trans();
         Main.f_trans();
 
@@ -80,7 +80,7 @@ public class MainTests {
     }
 
     @Test
-    public void testOtherwise() {
+    public void testOtherwise_ftrans() {
         Main.f_trans();
         Main.f_trans();
         Main.f_trans();
