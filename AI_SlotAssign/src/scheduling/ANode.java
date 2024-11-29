@@ -4,11 +4,29 @@ import enums.Sol;
 
 import java.util.ArrayList;
 
+/**
+ * And Tree Node recursive data structure
+ */
 public class ANode {
+    /**
+     * Current sol value of node
+     */
     private Sol sol;
+    /**
+     * Node data containing n slots of all activity assignments
+     * <br>where n is number of slots given from input
+     */
     private ArrayList<Slot> slots;
+    /**
+     * Variable number of children nodes (recursive data structure)
+     */
     private ArrayList<ANode> children;
 
+    /**
+     * Constructor, does a deep copy of given slots in order to avoid java Object pass-by-reference issues
+     *
+     * @param slots - slots to be deep copied to create own Node data
+     */
     public ANode(ArrayList<Slot> slots) {
         sol = Sol.none;
         this.slots = new ArrayList<>();
@@ -47,6 +65,11 @@ public class ANode {
         return children.isEmpty();
     }
 
+    /**
+     * Eval function to check how for each slot the number of activities assigned compared to minimum needed for slot
+     *
+     * @return (Slot minimum - activities assigned) for all slots combined
+     */
     public int eval_minfilled() {
         int min = 0;
         for (Slot s : slots) {
@@ -72,6 +95,12 @@ public class ANode {
         return 0;
     }
 
+    /**
+     * Override toString function
+     * <br> Only returns what printTreeHelper returns in-order to make a visually understandable tree representation in console printing
+     *
+     * @return String representation of tree starting from this node
+     */
     @Override
     public String toString() {
 //        StringBuilder sb = new StringBuilder();
@@ -97,28 +126,41 @@ public class ANode {
         return printTreeHelper(0);
     }
 
+    /**
+     * Helper print function, called recursively in order to print all children with correct number of tabs depending on depth
+     *
+     * @param depth - current depth of node being printed (for depth number of tab chars)
+     * @return string representation of tree starting from this node
+     */
     private String printTreeHelper(int depth) {
-        // Print the current node's slots and activities with indentation
-        System.out.print("    ".repeat(depth) + "(");
+        StringBuilder sb = new StringBuilder();
+
+        // Add indentation for the current depth level and start the node representation
+        sb.append("    ".repeat(depth)).append("(");
+
+        // Append the slots and their activities
         for (int i = 0; i < slots.size(); i++) {
-            System.out.print("{");
+            sb.append("{");
             for (int j = 0; j < slots.get(i).getActivities().size(); j++) {
-                System.out.print(slots.get(i).getActivities().get(j));
+                sb.append(slots.get(i).getActivities().get(j));
                 if (j < slots.get(i).getActivities().size() - 1) {
-                    System.out.print(", ");
+                    sb.append(", ");
                 }
             }
-            System.out.print("}");
+            sb.append("}");
             if (i < slots.size() - 1) {
-                System.out.print(", ");
+                sb.append(", ");
             }
         }
-        System.out.println(")");
 
-        // Recursively print the children with increased indentation
+        // Close the node representation and add the solution value
+        sb.append("),").append(sol.getSol()).append("\n");
+
+        // Recursively append the children nodes with increased indentation
         for (ANode child : children) {
-            child.printTreeHelper(depth + 1);
+            sb.append(child.printTreeHelper(depth + 1));
         }
-        return "";
+
+        return sb.toString();
     }
 }

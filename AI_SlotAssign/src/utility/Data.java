@@ -5,6 +5,9 @@ import scheduling.*;
 
 import java.util.ArrayList;
 
+/**
+ * Contains all data for problem from input file
+ */
 public class Data {
     private final String problemName;
 

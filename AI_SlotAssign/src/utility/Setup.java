@@ -7,9 +7,15 @@ import scheduling.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Setup {
+
+    private static String[] mwfGamePracTimes = {"8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
+    private static String[] fPracTimes = {"8:00", "10:00", "12:00", "14:00", "16:00", "18:00"};
+    private static String[] ttrGamesTimes = {"8:00", "9:30", "11:00", "12:30", "14:00", "15:30", "17:00", "18:30"};
+
     public static Data setup(String[] args) throws FileNotFoundException {
         if (args.length < 8) {
             System.out.println("Invalid command line arguments.");
@@ -50,7 +56,9 @@ public class Setup {
             int max = Integer.parseInt(split[2]);
             int min = Integer.parseInt(split[3]);
 
-            data.addSlot(new GameSlot(date, time, max, min));
+            if (checkValidGameTime(time, date)) {
+                data.addSlot(new GameSlot(date, time, max, min));
+            }
         }
 
         //Practice Slots
@@ -68,10 +76,13 @@ public class Setup {
             };
 
             String time = split[1];
+
             int max = Integer.parseInt(split[2]);
             int min = Integer.parseInt(split[3]);
 
-            data.addSlot(new PracticeSlot(date, time, max, min));
+            if (checkValidPracticeTime(time)) {
+                data.addSlot(new PracticeSlot(date, time, max, min));
+            }
         }
 
         //Games
@@ -195,5 +206,25 @@ public class Setup {
             }
         }
         return null;
+    }
+
+    private static boolean checkValidGameTime(String time, Days day) {
+        if (day == Days.MO || day == Days.WE || day == Days.FR) {
+            if (Arrays.asList(mwfGamePracTimes).contains(time)) {
+                return true;
+            }
+        } else if (day == Days.TU || day == Days.TR) {
+            if (Arrays.asList(ttrGamesTimes).contains(time)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean checkValidPracticeTime(String time) {
+        if (Arrays.asList(mwfGamePracTimes).contains(time)) {
+            return true;
+        }
+        return false;
     }
 }

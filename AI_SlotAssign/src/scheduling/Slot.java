@@ -5,16 +5,53 @@ import enums.SlotType;
 
 import java.util.ArrayList;
 
+/**
+ * Object representing slot
+ */
 public class Slot {
+    /**
+     * Unique static ID variable for all Slot objects
+     */
     private static int SLOT_IDS = 0;
+    /**
+     * Unique ID for object
+     */
     private int id;
+    /**
+     * What kind of activities this slot holds
+     */
     private SlotType type;
+    /**
+     * Day of the week for the slot
+     */
     private Days day;
+    /**
+     * Time of day of the slot
+     */
     private String time;
+    /**
+     * Max number of activities that can be assigned to slot
+     */
     private int max;
+    /**
+     * Minimum number of activities that must be assigned to slot (to avoid penalties)
+     */
     private int min;
+    /**
+     * List of activities assigned to slot
+     */
     private ArrayList<Activity> activities;
 
+    /**
+     * Slot Constructor
+     * <br>- Initializes activites to empty array
+     *
+     * @param type type
+     * @param day  day
+     * @param time time
+     * @param max  max
+     * @param min  min
+     */
     public Slot(SlotType type, Days day, String time, int max, int min) {
         this.id = ++SLOT_IDS;
         this.type = type;
@@ -25,6 +62,11 @@ public class Slot {
         activities = new ArrayList<>();
     }
 
+    /**
+     * Deep copy Slot Constructor
+     *
+     * @param other Slot to copy
+     */
     public Slot(Slot other) {
         this.id = other.id;
         this.type = other.type;

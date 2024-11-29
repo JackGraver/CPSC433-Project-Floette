@@ -2,6 +2,9 @@ package scheduling;
 
 import java.util.Arrays;
 
+/**
+ * Abstract class for different possible activities (Game or Practice)
+ */
 public abstract class Activity {
     private String identifier;
     private String trimId;
