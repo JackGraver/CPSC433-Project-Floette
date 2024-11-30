@@ -6,6 +6,7 @@ import scheduling.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -124,6 +125,7 @@ public class Setup {
 
         //Preferences
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+            System.out.println("preference");
             line = line.replace(" ", "");
             String[] split = line.split(",");
 
@@ -136,7 +138,8 @@ public class Setup {
             Slot s = findSlot(day, time, data.getSlots(), a instanceof Game);
 
             if (a != null && s != null) {
-                data.addPreference(new Preference(a, s, preference));
+                a.setPreference(new Preference(s, preference));
+//                data.addPreference(new Preference(a, s, preference));
             }
         }
 
@@ -149,7 +152,9 @@ public class Setup {
             Activity a2 = findActivity(split[1], data.getActivities());
 
             if (a1 != null && a2 != null) {
-                data.addPair(new Pair(a1, a2));
+                a1.setPair(new Pair(a2));
+                a2.setPair(new Pair(a1));
+//                data.addPair(new Pair(a1, a2));
             }
         }
 
@@ -199,9 +204,12 @@ public class Setup {
 //                }
 //            }
 //        }
+        String[] split = time.replace(" ", "").split(":");
+        LocalTime checkTime = LocalTime.of(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
         for (Slot s : slots) {
             if (s.getDay().getShortCode().equals(date)
-                    && s.getTime().equals(time)) {
+//                    && s.getStartTime().equals(time)) {
+                    && s.getStartTime() == checkTime) {
                 return s;
             }
         }

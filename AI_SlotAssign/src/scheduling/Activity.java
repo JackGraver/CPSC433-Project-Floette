@@ -1,6 +1,7 @@
 package scheduling;
 
-import java.util.Arrays;
+import assignments.Pair;
+import assignments.Preference;
 
 /**
  * Abstract class for different possible activities (Game or Practice)
@@ -11,11 +12,13 @@ public abstract class Activity {
     private String league;
     private String ageGroup;
     private int division;
+    private Preference preference;
+    private Pair pair;
 
     public Activity(String identifier) {
         this.identifier = identifier;
         this.trimId = identifier.replace(" ", "");
-//        parse(identifier);
+        parse(identifier);
     }
 
     private void parse(String identifier) {
@@ -54,4 +57,19 @@ public abstract class Activity {
         return league + " " + ageGroup + " " + division;
     }
 
+    public Preference getPreference() {
+        return preference;
+    }
+
+    public void setPreference(Preference preference) {
+        this.preference = preference;
+    }
+
+    public Pair getPair() {
+        return pair;
+    }
+
+    public void setPair(Pair pair) {
+        this.pair = pair;
+    }
 }

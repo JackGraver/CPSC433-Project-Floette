@@ -79,20 +79,46 @@ public class ANode {
     }
 
     public int eval_pref() {
-        //use Preference class, need to keep track of if we used
-        //one of the preferences in our slot? Either data structure in class
-        //or some kind of method (think it would be too much for method)
-        return 0;
+        int pref = 0;
+        for (Slot s : slots) {
+            for (Activity a : s.getActivities()) {
+                if (a.getPreference() != null) {
+                    if (a.getPreference().getSlot() != s) {
+                        pref++;
+                    }
+                }
+            }
+        }
+        return pref;
     }
 
     public int eval_pair() {
-        //same as preference idea implementation
-        return 0;
+        int pair = 0;
+        for (Slot s : slots) {
+            for (Activity a : s.getActivities()) {
+                if (a.getPair() != null) {
+                    if (!s.getActivities().contains(a.getPair().getPairedActivity())) {
+                        pair++;
+                    }
+                }
+            }
+        }
+
+        return pair;
     }
 
     public int eval_secdiff() {
-        //what is this??? where is it defined
-        return 0;
+        int secdiff = 0;
+        for (Slot s : slots) {
+            for (Activity a1 : s.getActivities()) {
+                for (Activity a2 : s.getActivities()) {
+                    if (a2.getDivision() == a1.getDivision()) {
+                        secdiff++;
+                    }
+                }
+            }
+        }
+        return secdiff;
     }
 
     /**

@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * Contains all data for problem from input file
  */
 public class Data {
+
     private final String problemName;
 
     private final int w_minfilled;
@@ -146,12 +147,12 @@ public class Data {
 //        notcompatibles.removeIf(nc -> nc.getActivityOne() == a);
 //        notcompatibles.removeIf(nc -> nc.getActivityTwo() == a);
         unwanteds.removeIf(un -> un.getActivity() == a);
-        preferences.removeIf(p -> p.getActivity() == a);
+//        preferences.removeIf(p -> p.getActivity() == a);
     }
 
     public String toString() {
         StringBuilder o = new StringBuilder();
-        o.append(problemName).append(" utility.Data:\n");
+        o.append(problemName);
 
         o.append("Slots:\n");
         for (Slot s : slots) {

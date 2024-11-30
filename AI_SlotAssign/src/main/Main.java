@@ -12,6 +12,7 @@ import utility.Data;
 import utility.Setup;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import assignments.NotCompatible;
 import assignments.Partial;
@@ -25,6 +26,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         data = Setup.setup(args); //load data from given file
+        System.out.println(data);
 
         nodeQueue = new ArrayList<>(); //create queue for going through expansion of leaves
 
@@ -35,6 +37,7 @@ public class Main {
         while (true) { //while there are nodes to expand (not sol = yes)
             ANode expansion_node = f_leaf(); //get next node to expand (f_leaf)
             Activity placement_activity = f_trans(); //get next activity to place in expanded node (f_trans)
+            System.out.println("Placing activity: " + placement_activity);
             if (placement_activity == null) {
                 System.out.println("No more activities to assign. Soling " + expansion_node + " to yes");
                 for (ANode n : nodeQueue) {
@@ -63,7 +66,7 @@ public class Main {
             }
 
         }
-        System.out.println("Best option is: " + best);
+        System.out.println(printOutput(best));
 
     }
 
@@ -121,15 +124,15 @@ public class Main {
             slot.addActivity(curr);
             if (slot.getDay() == Days.MO) {
                 for (Slot s : child.getSlots()) {
-                    if (s.getDay() == Days.WE && s.getTime().equals(slot.getTime())) {
+                    if (s.getDay() == Days.WE && s.getStartTime().equals(slot.getStartTime())) {
                         s.addActivity(curr);
-                    } else if (s.getDay() == Days.FR && s.getTime().equals(slot.getTime())) {
+                    } else if (s.getDay() == Days.FR && s.getStartTime().equals(slot.getStartTime())) {
                         s.addActivity(curr);
                     }
                 }
             } else if (slot.getDay() == Days.TU) {
                 for (Slot s : child.getSlots()) {
-                    if (s.getDay() == Days.TR && s.getTime().equals(slot.getTime())) {
+                    if (s.getDay() == Days.TR && s.getStartTime().equals(slot.getStartTime())) {
                         s.addActivity(curr);
                     }
                 }
@@ -173,6 +176,19 @@ public class Main {
                 }
             }
         }
+
+        if (curr.getDivision() == 9) {
+            return slot.isEveningSlot();
+        }
+
+        if (curr.getAgeGroup().equals("U15") || curr.getAgeGroup().equals("U16") || curr.getAgeGroup().equals("U17") || curr.getAgeGroup().equals("U19")) {
+//            if(slot.getStartTime())
+        }
+
+        if (slot.getStartTime().equals("11:00")) {
+            return !(curr instanceof Game);
+        }
+
         return true;
     }
 
@@ -208,12 +224,14 @@ public class Main {
      */
     public static Activity f_trans() {
         if (data.getActivities().isEmpty()) { //1
+            System.out.println("no more activities");
             return null;
         }
 
         //2?
 
         if (!data.getPartials().isEmpty()) { //3.1 & 3.2
+            System.out.println("partials");
             return data.getPartials().get(0).getActivity();
         }
 
@@ -222,19 +240,23 @@ public class Main {
         if (!data.getNotCompatibles().isEmpty()) { //3.5 & 3.6
             if (data.getNotCompatibles().get(0).aTwoAssigned) {
                 data.getNotCompatibles().get(0).aTwoAssigned = true;
+                System.out.println("not comp 1");
                 return data.getNotCompatibles().get(0).getActivityOne();
             }
             if (data.getNotCompatibles().get(0).aOneAssigned) {
                 data.getNotCompatibles().get(0).aOneAssigned = true;
+                System.out.println("not comp 2");
                 return data.getNotCompatibles().get(0).getActivityTwo();
             }
 //            return data.getNotCompatibles().get(0).getActivityOne();
         }
 
         if (!data.getUnwanteds().isEmpty()) { //3.7 & 3.8
+            System.out.println("unwa");
             return data.getUnwanteds().get(0).getActivity();
         }
 
+        System.out.println("last");
         return data.getActivities().get(0);
     }
 
@@ -243,5 +265,22 @@ public class Main {
                 + (node.eval_pref() * data.getW_pref())
                 + (node.eval_pair() * data.getW_pair())
                 + (node.eval_secdiff() * data.getW_secdiff());
+    }
+
+    private static String printOutput(ANode node) {
+        StringBuilder out = new StringBuilder();
+        out.append("Eval-value: ").append(eval(node)).append("\n");
+
+        TreeMap<String, String> sorted = new TreeMap<>();
+
+        for (Slot s : node.getSlots()) {
+            for (Activity a : s.getActivities()) {
+                sorted.put(a.getIdentifier(), s.getDay().getShortCode() + ", " + s.getStartTime());
+            }
+        }
+
+        sorted.forEach((key, value) -> out.append(key).append(" : ").append(value).append("\n"));
+
+        return out.toString();
     }
 }
