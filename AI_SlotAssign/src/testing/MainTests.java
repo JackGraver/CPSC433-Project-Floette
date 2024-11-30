@@ -50,7 +50,7 @@ public class MainTests {
     @Test
     public void testPartAssign_ftrans() {
         Main.data = data;
-        Activity res = Main.f_trans();
+        Activity res = Main.f_trans(null);
 
         System.out.println("pa: " + res);
 
@@ -73,9 +73,9 @@ public class MainTests {
 
     @Test
     public void testNotCompatible_ftrans() {
-        Main.f_trans();
+        Main.f_trans(null);
 
-        Activity res = Main.f_trans();
+        Activity res = Main.f_trans(null);
         System.out.println("nc: " + res);
 
         assertEquals("Game1", res.getIdentifier());
@@ -83,10 +83,10 @@ public class MainTests {
 
     @Test
     public void testUnwanted_ftrans() {
-        Main.f_trans();
-        Main.f_trans();
+        Main.f_trans(null);
+        Main.f_trans(null);
 
-        Activity res = Main.f_trans();
+        Activity res = Main.f_trans(null);
         System.out.println("un: " + res);
 
         assertEquals("Game1", res.getIdentifier());
@@ -94,11 +94,11 @@ public class MainTests {
 
     @Test
     public void testOtherwise_ftrans() {
-        Main.f_trans();
-        Main.f_trans();
-        Main.f_trans();
+        Main.f_trans(null);
+        Main.f_trans(null);
+        Main.f_trans(null);
 
-        Activity res = Main.f_trans();
+        Activity res = Main.f_trans(null);
         System.out.println("o: " + res);
 
         assertEquals("Game2", res.getIdentifier());

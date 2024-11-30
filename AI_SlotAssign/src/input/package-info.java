@@ -1,4 +1,4 @@
 /**
- * Contains .txt input files for different problems
+ * Contains .txt input files for problem inputs
  */
 package input;

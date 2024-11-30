@@ -3,18 +3,18 @@ SmallExample
 Game slots:
 MO, 8:00, 2, 0
 TU, 11:00, 2, 0 
-W, 14:00, 2, 0 
+WE, 14:00, 2, 0
 TR, 9:30, 2, 0
 TR, 18:00, 2, 0
 Practice slots: 
 MO, 8:00, 2, 0
-W, 14:00, 2, 0
+WE, 14:00, 2, 0
 TR, 10:00,2,2
 TR, 18:00, 2, 0
 Games: 
 CMSA U13T3 DIV 01
 CUSA U13 DIV 01
-CMSA O18 DIV 91
+CMSA O18 DIV 01
 CMSA U13T3 DIV 02
 CMSA U13T1 DIV 01
 Practices: 

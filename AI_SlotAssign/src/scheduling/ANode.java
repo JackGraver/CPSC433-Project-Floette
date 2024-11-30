@@ -73,7 +73,9 @@ public class ANode {
     public int eval_minfilled() {
         int min = 0;
         for (Slot s : slots) {
-            min = s.getMin() - s.getActivities().size();
+            if (!(s.getMin() == 0)) {
+                min = s.getMin() - s.getActivities().size();
+            }
         }
         return min;
     }
@@ -119,6 +121,10 @@ public class ANode {
             }
         }
         return secdiff;
+    }
+
+    public String printSolo() {
+        return "Node: " + getChildren().size() + ", " + getSol();
     }
 
     /**

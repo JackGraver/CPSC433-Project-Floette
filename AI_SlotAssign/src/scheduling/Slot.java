@@ -82,11 +82,11 @@ public class Slot {
      */
     private void parseTime(String time) {
         String[] split = time.replace(" ", "").split(":");
-        startTime = LocalTime.of(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+        this.startTime = LocalTime.of(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
         if (day == Days.MO || day == Days.WE || day == Days.FR) {
-            endTime = startTime.plusHours(1);
+            this.endTime = startTime.plusHours(1);
         } else if (day == Days.TU || day == Days.TR) {
-            endTime = startTime.plusHours(1).plusMinutes(30);
+            this.endTime = startTime.plusHours(1).plusMinutes(30);
         }
     }
 

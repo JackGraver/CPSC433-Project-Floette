@@ -11,6 +11,8 @@ import scheduling.Slot;
 import utility.Data;
 import utility.Setup;
 
+import java.io.FileNotFoundException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
@@ -23,51 +25,50 @@ public class Main {
     public static Data data;
     private static ANode root;
     private static ArrayList<ANode> nodeQueue;
+    private static ArrayList<ANode> completedNodes;
 
     public static void main(String[] args) throws Exception {
-        data = Setup.setup(args); //load data from given file
-        System.out.println(data);
+        try {
+            data = Setup.setup(args); //load data from given file
+        } catch (FileNotFoundException e) {
+            System.out.println("Invalid file! Exiting Program.");
+            System.exit(0);
+        }
+
 
         nodeQueue = new ArrayList<>(); //create queue for going through expansion of leaves
+        completedNodes = new ArrayList<>();
 
         root = new ANode(data.getSlots()); //initialize root node
         nodeQueue.add(root); //add to queue (to be expanded first)
 
         //is a for loop for testing
-        while (true) { //while there are nodes to expand (not sol = yes)
+        while (!nodeQueue.isEmpty()) { //while there are nodes to expand (not sol = yes)
+            System.out.println("---Main Loop---");
+            printTree(root);
+            for (ANode n : nodeQueue) {
+                System.out.println("\t" + n.printSolo());
+            }
             ANode expansion_node = f_leaf(); //get next node to expand (f_leaf)
-            Activity placement_activity = f_trans(); //get next activity to place in expanded node (f_trans)
-            System.out.println("Placing activity: " + placement_activity);
+            System.out.println("\tExpanding Node: " + expansion_node);
+            Activity placement_activity = f_trans(expansion_node); //get next activity to place in expanded node (f_trans)
+            System.out.println("\tPlacing activity: " + placement_activity);
+
+            if (div(expansion_node, placement_activity) == 0) {//handle expansion
+                expansion_node.setSol(Sol.yes);
+            }
             if (placement_activity == null) {
                 System.out.println("No more activities to assign. Soling " + expansion_node + " to yes");
-                for (ANode n : nodeQueue) {
-                    if (n.isLeaf()) {
-                        n.setSol(Sol.yes);
-                    }
-                }
-                break;
+                expansion_node.setSol(Sol.yes);
             }
-            div(expansion_node, placement_activity); //handle expansion
-            data.getActivities().remove(placement_activity);
+
             data.removeAllActivity(placement_activity);
-
+            nodeQueue.remove(expansion_node);
+            completedNodes.add(expansion_node);
         }
+
         printTree(root);
-        ANode best = null;
-        for (ANode n : nodeQueue) {
-            if (n.isLeaf()) {
-                if (best == null) {
-                    best = n;
-                } else {
-                    if (eval(n) < eval(best)) {
-                        best = n;
-                    }
-                }
-            }
-
-        }
-        System.out.println(printOutput(best));
-
+        printResults(root);
     }
 
     private static void printTree(ANode n) {
@@ -77,35 +78,55 @@ public class Main {
         System.out.println(n);
     }
 
+    private static boolean alreadyAssigned(ANode expansion_node, Activity placement_activity) {
+        for (Slot s : expansion_node.getSlots()) {
+            for (Activity a : s.getActivities()) {
+                if (a == placement_activity) {
+                    System.out.println("skipping because already placed activity in node");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Handles expansion of a node given an activity to assign
      *
      * @param node - node being expanded
      * @param curr - activity being assigned to slots
      */
-    private static void div(ANode node, Activity curr) {
+    private static int div(ANode node, Activity curr) {
+        System.out.println("---Div---");
+        int branches = 0;
         ArrayList<Integer> assigned = new ArrayList<>(); //make sure we don't choose the same slot for each expansion leaf (could use better solution)
 
         //loop through number of slots (n) to potentially create n children nodes
         for (int i = 0; i < node.getSlots().size(); i++) {
+            System.out.println("\tTop div loop");
             ANode child = new ANode(node.getSlots());
             for (Slot slot : child.getSlots()) {
+                System.out.println("\t\tInside div loop");
                 if (!assigned.contains(child.getSlots().indexOf(slot))) {
                     //check if it's the correct type of slot (Game Slot for Games, Prac slot for Practices)
                     if (slot.getType() == SlotType.Game && curr instanceof Game) { //Game
                         if (assignActivityToSlot(node, child, slot, curr)) {
                             assigned.add(child.getSlots().indexOf(slot));
+                            branches++;
                             break;
                         }
                     } else if (slot.getType() == SlotType.Practice && curr instanceof Practice) { //Prac
                         if (assignActivityToSlot(node, child, slot, curr)) {
                             assigned.add(child.getSlots().indexOf(slot));
+                            branches++;
                             break;
                         }
                     }
                 }
             }
         }
+        System.out.println("Created " + branches + " branches");
+        return branches;
     }
 
     /**
@@ -121,18 +142,22 @@ public class Main {
      */
     private static boolean assignActivityToSlot(ANode parent, ANode child, Slot slot, Activity curr) {
         if (noHardConstraintViolations(slot, curr)) {
+            System.out.println("\t\tAssign " + curr + " to " + slot);
             slot.addActivity(curr);
             if (slot.getDay() == Days.MO) {
                 for (Slot s : child.getSlots()) {
                     if (s.getDay() == Days.WE && s.getStartTime().equals(slot.getStartTime())) {
+                        System.out.println("\t\t\tAdded corresponding WE Slot");
                         s.addActivity(curr);
                     } else if (s.getDay() == Days.FR && s.getStartTime().equals(slot.getStartTime())) {
+                        System.out.println("\t\t\tAdded corresponding FR Slot");
                         s.addActivity(curr);
                     }
                 }
             } else if (slot.getDay() == Days.TU) {
                 for (Slot s : child.getSlots()) {
                     if (s.getDay() == Days.TR && s.getStartTime().equals(slot.getStartTime())) {
+                        System.out.println("\t\t\tAdded corresponding TR Slot");
                         s.addActivity(curr);
                     }
                 }
@@ -145,26 +170,30 @@ public class Main {
     }
 
     private static boolean noHardConstraintViolations(Slot slot, Activity curr) {
+        System.out.println("\tChecking Hard Constraint Violations of " + slot + " for " + curr + " assignment");
         if (slot.isFull()) { //1&2) Not more than gamemax(s) activities assigned to each slot
-            return false;
+            return false; //violates constraint
         }
         //4) not compatible activities in slot
         for (NotCompatible nc : data.getNotCompatibles()) { //check all not compatibles
             if (nc.getActivityOne() == curr) { //if activity to be added is one of the not compatible activities
                 if (slot.getActivities().contains(nc.getActivityTwo())) { //and the other activity already in slot
-                    return false; //violates constraint, go try next slot
+                    System.out.println("\t\tViolates Not Compatible 1");
+                    return false; //violates constraint
                 }
             } else if (nc.getActivityTwo() == curr) { //if activity to be added is one of the not compatible activities
                 if (slot.getActivities().contains(nc.getActivityOne())) { //and the other activity already in slot
-                    return false; //violates constraint, go try next slot
+                    System.out.println("\t\tViolates Not Compatible 2");
+                    return false; //violates constraint
                 }
             }
         }
         //5) partial assignments of activities to slot
         for (Partial p : data.getPartials()) {
-            if (p.getActivity() == curr) { //if there is a partassign for this activity
-                if (p.getSlot().getID() != slot.getID()) {
-                    return false; //exit the loop because the activity has been assigned for this node
+            if (p.getActivity() == curr) { //if there is a partial assignment for this activity
+                if (p.getSlot().getID() != slot.getID()) { //not the correct slot for partial assignment
+                    System.out.println("\t\tViolates Partial");
+                    return false; //violates constraint
                 }
             }
         }
@@ -172,20 +201,25 @@ public class Main {
         for (Unwanted u : data.getUnwanteds()) {
             if (u.getActivity() == curr) { //exists an unwanted assignment containing this activity
                 if (u.getSlot().getID() == slot.getID()) {
-                    return false; //go to next slot as this activity cannot be assigned to this slot
+                    System.out.println("\t\tViolates Unwanted");
+                    return false; //violates constraint
                 }
             }
         }
 
         if (curr.getDivision() == 9) {
-            return slot.isEveningSlot();
+            if (slot.isEveningSlot()) {
+                System.out.println("\t\tViolates evening slot");
+                return false;
+            }
         }
 
         if (curr.getAgeGroup().equals("U15") || curr.getAgeGroup().equals("U16") || curr.getAgeGroup().equals("U17") || curr.getAgeGroup().equals("U19")) {
 //            if(slot.getStartTime())
         }
 
-        if (slot.getStartTime().equals("11:00")) {
+        if (slot.getStartTime() == LocalTime.of(11, 0)) {
+            System.out.println("\t\tViolates \"Meeting time\"");
             return !(curr instanceof Game);
         }
 
@@ -220,44 +254,82 @@ public class Main {
      * - Chooses based off different hard constraints and other checks
      * - If no hard constraint violations, chooses the first activity yet to be assigned
      *
-     * @return Activity - Game or Practice to be assigned to slot(s)
+     * @return Activity - The Game or Practice being assigned to slot(s)
      */
-    public static Activity f_trans() {
-        if (data.getActivities().isEmpty()) { //1
-            System.out.println("no more activities");
-            return null;
-        }
+    public static Activity f_trans(ANode node) {
+//        if (data.getActivities().isEmpty()) { //1
+////            System.out.println("no more activities");
+//            node.setSol(Sol.yes);
+//            return null;
+//        }
 
         //2?
 
+        //3
         if (!data.getPartials().isEmpty()) { //3.1 & 3.2
-            System.out.println("partials");
-            return data.getPartials().get(0).getActivity();
+            for (Partial p : data.getPartials()) {
+                if (!alreadyAssigned(node, p.getActivity())) {
+                    System.out.println("Chosen because partial (3.1) (3.2)");
+                    return p.getActivity();
+                }
+            }
+//            return data.getPartials().get(0).getActivity();
         }
-
-        //3.3 & 3.4
+//3.3 & 3.4
+//
+//        }
+//        if() {
 
         if (!data.getNotCompatibles().isEmpty()) { //3.5 & 3.6
-            if (data.getNotCompatibles().get(0).aTwoAssigned) {
-                data.getNotCompatibles().get(0).aTwoAssigned = true;
-                System.out.println("not comp 1");
-                return data.getNotCompatibles().get(0).getActivityOne();
+            for (NotCompatible nc : data.getNotCompatibles()) {
+                if (nc.aOneAssigned) {
+                    if (!alreadyAssigned(node, nc.getActivityTwo())) {
+                        System.out.println("Chosen because not compatible (3.5) (3.6)");
+                        return nc.getActivityTwo();
+                    }
+                }
+                if (nc.aTwoAssigned) {
+                    if (!alreadyAssigned(node, nc.getActivityOne())) {
+                        System.out.println("Chosen because not compatible (3.5) (3.6)");
+                        return nc.getActivityOne();
+                    }
+                }
             }
-            if (data.getNotCompatibles().get(0).aOneAssigned) {
-                data.getNotCompatibles().get(0).aOneAssigned = true;
-                System.out.println("not comp 2");
-                return data.getNotCompatibles().get(0).getActivityTwo();
-            }
+//            if (data.getNotCompatibles().get(0).aTwoAssigned) {
+//                data.getNotCompatibles().get(0).aTwoAssigned = true;
+//                System.out.println("Chosen because not compatible (3.5) (3.6)");
+//                return data.getNotCompatibles().get(0).getActivityOne();
+//            }
+//            if (data.getNotCompatibles().get(0).aOneAssigned) {
+//                data.getNotCompatibles().get(0).aOneAssigned = true;
+
+//                return data.getNotCompatibles().get(0).getActivityTwo();
+//            }
 //            return data.getNotCompatibles().get(0).getActivityOne();
         }
 
         if (!data.getUnwanteds().isEmpty()) { //3.7 & 3.8
-            System.out.println("unwa");
-            return data.getUnwanteds().get(0).getActivity();
+            for (Unwanted u : data.getUnwanteds()) {
+                if (!alreadyAssigned(node, u.getActivity())) {
+                    System.out.println("Chosen because unwanted (3.7) (3.8)");
+                    return u.getActivity();
+                }
+            }
+
+//            return data.getUnwanteds().get(0).getActivity();
         }
 
-        System.out.println("last");
-        return data.getActivities().get(0);
+
+        for (Activity ac : data.getActivities()) {
+            if (!alreadyAssigned(node, ac)) {
+                System.out.println("Chosen as smallest i (3.9) (3.10)");
+                return ac;
+            } else {
+                System.out.println("not chosen because already assigned");
+            }
+        }
+//        return data.getActivities().get(0);
+        return null;
     }
 
     private static int eval(ANode node) {
@@ -265,6 +337,23 @@ public class Main {
                 + (node.eval_pref() * data.getW_pref())
                 + (node.eval_pair() * data.getW_pair())
                 + (node.eval_secdiff() * data.getW_secdiff());
+    }
+
+    private static void printResults(ANode root) {
+        ANode best = root;
+
+        for (ANode n : completedNodes) {
+            if (n.isLeaf()) {
+                if (best == null) {
+                    best = n;
+                } else {
+                    if (eval(n) < eval(best)) {
+                        best = n;
+                    }
+                }
+            }
+        }
+        System.out.println(printOutput(best));
     }
 
     private static String printOutput(ANode node) {
