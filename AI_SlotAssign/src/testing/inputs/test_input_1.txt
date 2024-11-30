@@ -10,7 +10,7 @@ Practice slots:
 MO, 8:00, 2, 0
 W, 14:00, 2, 0
 TR, 10:00,2,2
-TR, 18:00, 19:00
+TR, 18:00, 2, 0
 Games: 
 CMSA U13T3 DIV 01
 CUSA U13 DIV 01
