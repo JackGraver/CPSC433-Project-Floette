@@ -1,0 +1,16 @@
+Name:
+Partial
+Game slots:
+MO, 10:00, 1, 0
+MO, 12:00, 1, 0
+Practice slots:
+Games:
+CMSA U13T3 DIV 01
+CMSA U13T3 DIV 02
+Practices:
+Not compatible:
+CMSA U13T3 DIV 01, CMSA U13T3 DIV 02
+Unwanted:
+Preferences:
+Pair:
+Partial assignments:

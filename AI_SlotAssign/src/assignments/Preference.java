@@ -1,14 +1,18 @@
 package assignments;
 
-import scheduling.Activity;
 import scheduling.Slot;
 
-public class Preference extends Assignment {
+public class Preference {
+    private Slot slot;
     private int preferenceValue;
 
-    public Preference(Activity activity, Slot slot, int preferenceValue) {
-        super(activity, slot);
+    public Preference(Slot slot, int preferenceValue) {
+        this.slot = slot;
         this.preferenceValue = preferenceValue;
+    }
+
+    public Slot getSlot() {
+        return slot;
     }
 
     public int getPreferenceValue() {
@@ -17,6 +21,6 @@ public class Preference extends Assignment {
 
     @Override
     public String toString() {
-        return getActivity().getIdentifier() + " prefers " + getSlot() + " with preference: " + preferenceValue;
+        return "preference value: " + preferenceValue;
     }
 }

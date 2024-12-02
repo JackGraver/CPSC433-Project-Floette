@@ -28,7 +28,7 @@ public class ANodeTests {
 
     @Test
     public void testMinFilled() {
-        int res = node.eval_minfilled();
+        int res = node.eval_minfilled(1, 1);
         assertEquals(2, res);
     }
 }

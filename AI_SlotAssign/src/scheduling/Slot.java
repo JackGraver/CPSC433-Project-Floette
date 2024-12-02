@@ -3,7 +3,10 @@ package scheduling;
 import enums.Days;
 import enums.SlotType;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Object representing slot
@@ -26,9 +29,13 @@ public class Slot {
      */
     private Days day;
     /**
-     * Time of day of the slot
+     * Start Time of the slot
      */
-    private String time;
+    private LocalTime startTime;
+    /**
+     * End time of the slot
+     */
+    private LocalTime endTime;
     /**
      * Max number of activities that can be assigned to slot
      */
@@ -41,6 +48,11 @@ public class Slot {
      * List of activities assigned to slot
      */
     private ArrayList<Activity> activities;
+
+    /**
+     * If slot is evening slot (18:00 and later)
+     */
+    private boolean eveningSlot;
 
     /**
      * Slot Constructor
@@ -56,10 +68,26 @@ public class Slot {
         this.id = ++SLOT_IDS;
         this.type = type;
         this.day = day;
-        this.time = time;
+        parseTime(time);
         this.max = max;
         this.min = min;
         activities = new ArrayList<>();
+        eveningSlot = startTime.isAfter(LocalTime.of(18, 0));
+    }
+
+    /**
+     * Parse from String xx:xx-yy:yy into LocalTime start and end time variables
+     *
+     * @param time String representation of time
+     */
+    private void parseTime(String time) {
+        String[] split = time.replace(" ", "").split(":");
+        this.startTime = LocalTime.of(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+        if (day == Days.MO || day == Days.WE || day == Days.FR) {
+            this.endTime = startTime.plusHours(1);
+        } else if (day == Days.TU || day == Days.TR) {
+            this.endTime = startTime.plusHours(1).plusMinutes(30);
+        }
     }
 
     /**
@@ -71,7 +99,7 @@ public class Slot {
         this.id = other.id;
         this.type = other.type;
         this.day = other.day;
-        this.time = other.time;
+        this.startTime = other.startTime;
         this.max = other.max;
         this.min = other.min;
 
@@ -91,6 +119,10 @@ public class Slot {
         this.type = type;
     }
 
+    public boolean isGame() {
+        return type == SlotType.Game;
+    }
+
     public Days getDay() {
         return day;
     }
@@ -99,12 +131,12 @@ public class Slot {
         this.day = day;
     }
 
-    public String getTime() {
-        return time;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
     }
 
     public int getMax() {
@@ -135,8 +167,11 @@ public class Slot {
         return activities.size() == max;
     }
 
-    public String toString() {
-        return "[" + id + "] (" + type + ") " + day + " @" + time + " | Max Filled: " + max + ", Min Filed: " + min;
+    public boolean isEveningSlot() {
+        return eveningSlot;
     }
 
+    public String toString() {
+        return "[" + id + "] (" + type + ") " + day + " @" + startTime + "-" + endTime + " | Max Filled: " + max + ", Min Filed: " + min;
+    }
 }
