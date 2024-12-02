@@ -10,6 +10,6 @@ public class Unwanted extends Assignment {
 
     @Override
     public String toString() {
-        return getActivity().getIdentifier() + " does not want slot " + getSlot().toString();
+        return getActivity().getFullIdentifier() + " does not want slot " + getSlot().toString();
     }
 }

@@ -152,7 +152,7 @@ public class Data {
 
     public String toString() {
         StringBuilder o = new StringBuilder();
-        o.append(problemName);
+        o.append(problemName).append("\n");
 
         o.append("Slots:\n");
         for (Slot s : slots) {

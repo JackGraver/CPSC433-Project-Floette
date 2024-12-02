@@ -119,6 +119,10 @@ public class Slot {
         this.type = type;
     }
 
+    public boolean isGame() {
+        return type == SlotType.Game;
+    }
+
     public Days getDay() {
         return day;
     }

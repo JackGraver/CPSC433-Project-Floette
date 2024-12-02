@@ -41,7 +41,7 @@ public class Setup {
         String line;
         //Game Slots
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            line = line.replace(" ", "");
+            line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
             Days date = switch (split[0]) {
@@ -54,17 +54,17 @@ public class Setup {
             };
 
             String time = split[1];
-            int max = Integer.parseInt(split[2]);
-            int min = Integer.parseInt(split[3]);
+            int max = Integer.parseInt(split[2].trim());
+            int min = Integer.parseInt(split[3].trim());
 
-            if (checkValidGameTime(time, date)) {
-                data.addSlot(new GameSlot(date, time, max, min));
-            }
+//            if (checkValidGameTime(time, date)) {
+            data.addSlot(new GameSlot(date, time, max, min));
+//            }
         }
 
         //Practice Slots
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            line = line.replace(" ", "");
+            line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
             Days date = switch (split[0]) {
@@ -78,27 +78,32 @@ public class Setup {
 
             String time = split[1];
 
-            int max = Integer.parseInt(split[2]);
-            int min = Integer.parseInt(split[3]);
+            int max = Integer.parseInt(split[2].trim());
+            int min = Integer.parseInt(split[3].trim());
 
-            if (checkValidPracticeTime(time)) {
-                data.addSlot(new PracticeSlot(date, time, max, min));
-            }
+//            if (checkValidPracticeTime(time)) {
+            data.addSlot(new PracticeSlot(date, time, max, min));
+//            }
         }
 
         //Games
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            data.addActivity(new Game(line.replace("  ", " ")));
+            data.addActivity(new Game(line));
         }
 
         //Practices
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            data.addActivity(new Practice(line.replace("  ", " ")));
+            Practice prac = new Practice(line);
+            Game g;
+            if ((g = findAssociatedGame(prac, data.getActivities())) != null) {
+                g.setAssociatedPractice(prac);
+            }
+            data.addActivity(new Practice(line));
         }
 
         //Not Compatible
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            line = line.replace(" ", "");
+            line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
             Activity a1 = findActivity(split[0], data.getActivities());
@@ -111,7 +116,7 @@ public class Setup {
 
         //Unwanted
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            line = line.replace(" ", "");
+            line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
             Activity a = findActivity(split[0], data.getActivities());
@@ -125,8 +130,7 @@ public class Setup {
 
         //Preferences
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            System.out.println("preference");
-            line = line.replace(" ", "");
+            line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
             String day = split[0];
@@ -145,7 +149,7 @@ public class Setup {
 
         //Pairs
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            line = line.replace(" ", "");
+            line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
             Activity a1 = findActivity(split[0], data.getActivities());
@@ -160,7 +164,7 @@ public class Setup {
 
         //Partials
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            line = line.replace(" ", "");
+            line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
             Activity a = findActivity(split[0], data.getActivities());
@@ -176,7 +180,7 @@ public class Setup {
 
     private static Activity findActivity(String identifier, ArrayList<Activity> activities) {
         for (Activity a : activities) {
-            if (a.getTrimID().equals(identifier)) {
+            if (a.getFullIdentifier().equals(identifier)) {
                 return a;
             }
         }
@@ -211,6 +215,19 @@ public class Setup {
 //                    && s.getStartTime().equals(time)) {
                     && s.getStartTime() == checkTime) {
                 return s;
+            }
+        }
+        return null;
+    }
+
+    private static Game findAssociatedGame(Practice prac, ArrayList<Activity> activities) {
+        for (Activity a : activities) {
+            if (a instanceof Game) {
+                if (a.getDivision() == prac.getDivision()
+                        && a.getAgeGroup().equals(prac.getAgeGroup())
+                        && a.getDivision() == prac.getDivision()) {
+                    return (Game) a;
+                }
             }
         }
         return null;

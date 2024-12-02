@@ -1,19 +1,11 @@
 package testing;
 
-import assignments.NotCompatible;
-import assignments.Partial;
-import assignments.Unwanted;
-import enums.Days;
-import enums.SlotType;
 import main.Main;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import scheduling.Activity;
-import scheduling.Game;
-import scheduling.Slot;
 import utility.Data;
 
-import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,13 +40,19 @@ public class MainTests {
     }
 
     @Test
+    public void other() {
+        String line = "  CMSA  U13T3 DIV    01    ";
+        System.out.println(line.replaceAll("\\s{2,}", " ").trim());
+    }
+
+    @Test
     public void testPartAssign_ftrans() {
         Main.data = data;
         Activity res = Main.f_trans(null);
 
         System.out.println("pa: " + res);
 
-        assertEquals("Game1", res.getIdentifier());
+        assertEquals("Game1", res.getFullIdentifier());
     }
 
     @Test
@@ -78,7 +76,7 @@ public class MainTests {
         Activity res = Main.f_trans(null);
         System.out.println("nc: " + res);
 
-        assertEquals("Game1", res.getIdentifier());
+        assertEquals("Game1", res.getFullIdentifier());
     }
 
     @Test
@@ -89,7 +87,7 @@ public class MainTests {
         Activity res = Main.f_trans(null);
         System.out.println("un: " + res);
 
-        assertEquals("Game1", res.getIdentifier());
+        assertEquals("Game1", res.getFullIdentifier());
     }
 
     @Test
@@ -101,6 +99,6 @@ public class MainTests {
         Activity res = Main.f_trans(null);
         System.out.println("o: " + res);
 
-        assertEquals("Game2", res.getIdentifier());
+        assertEquals("Game2", res.getFullIdentifier());
     }
 }

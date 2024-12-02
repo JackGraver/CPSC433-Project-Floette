@@ -1,0 +1,17 @@
+Name:
+Associated MO-WE-FR
+Game slots:
+MO, 8:00, 2, 1
+WE, 8:00, 2, 1
+TU, 8:00, 2, 1
+Practice slots:
+WE, 8:00, 2, 1
+Games:
+CMSA U13T3 DIV 01
+Practices:
+CMSA U13T3 DIV 01 PRC 01
+Not compatible:
+Unwanted:
+Preferences:
+Pair:
+Partial assignments:

@@ -30,11 +30,11 @@ public class Main {
     public static void main(String[] args) throws Exception {
         try {
             data = Setup.setup(args); //load data from given file
+            System.out.println(data);
         } catch (FileNotFoundException e) {
             System.out.println("Invalid file! Exiting Program.");
             System.exit(0);
         }
-
 
         nodeQueue = new ArrayList<>(); //create queue for going through expansion of leaves
         completedNodes = new ArrayList<>();
@@ -147,11 +147,21 @@ public class Main {
             if (slot.getDay() == Days.MO) {
                 for (Slot s : child.getSlots()) {
                     if (s.getDay() == Days.WE && s.getStartTime().equals(slot.getStartTime())) {
-                        System.out.println("\t\t\tAdded corresponding WE Slot");
-                        s.addActivity(curr);
+                        if (curr instanceof Game && s.isGame()) {
+                            System.out.println("\t\t\tAdded corresponding WE Slot");
+                            s.addActivity(curr);
+                        } else if (curr instanceof Practice && !s.isGame()) {
+                            System.out.println("\t\t\tAdded corresponding WE Slot");
+                            s.addActivity(curr);
+                        }
                     } else if (s.getDay() == Days.FR && s.getStartTime().equals(slot.getStartTime())) {
-                        System.out.println("\t\t\tAdded corresponding FR Slot");
-                        s.addActivity(curr);
+                        if (curr instanceof Game && s.isGame()) {
+                            System.out.println("\t\t\tAdded corresponding FR Slot");
+                            s.addActivity(curr);
+                        } else if (curr instanceof Practice && !s.isGame()) {
+                            System.out.println("\t\t\tAdded corresponding FR Slot");
+                            s.addActivity(curr);
+                        }
                     }
                 }
             } else if (slot.getDay() == Days.TU) {
@@ -171,9 +181,10 @@ public class Main {
 
     private static boolean noHardConstraintViolations(Slot slot, Activity curr) {
         System.out.println("\tChecking Hard Constraint Violations of " + slot + " for " + curr + " assignment");
-        if (slot.isFull()) { //1&2) Not more than gamemax(s) activities assigned to each slot
+        if (slot.isFull()) { //1&2) Not more than gamemax(s)/practicemax(s) activities assigned to each slot
             return false; //violates constraint
         }
+
         //4) not compatible activities in slot
         for (NotCompatible nc : data.getNotCompatibles()) { //check all not compatibles
             if (nc.getActivityOne() == curr) { //if activity to be added is one of the not compatible activities
@@ -214,13 +225,36 @@ public class Main {
             }
         }
 
-        if (curr.getAgeGroup().equals("U15") || curr.getAgeGroup().equals("U16") || curr.getAgeGroup().equals("U17") || curr.getAgeGroup().equals("U19")) {
+        if (curr.getAgeGroup().equals("U15")
+                || curr.getAgeGroup().equals("U16")
+                || curr.getAgeGroup().equals("U17")
+                || curr.getAgeGroup().equals("U19")) {
 //            if(slot.getStartTime())
         }
 
-        if (slot.getStartTime() == LocalTime.of(11, 0)) {
+        for (Activity a : slot.getActivities()) {
+            if (a.getDivision() == curr.getDivision()) {
+                return false;
+            }
+        }
+
+        if (curr instanceof Game
+                && slot.getDay() == Days.TU
+                && slot.getStartTime() == LocalTime.of(11, 0)) {
             System.out.println("\t\tViolates \"Meeting time\"");
-            return !(curr instanceof Game);
+            return false;
+        }
+
+        for (Activity a : slot.getActivities()) {
+            if (a instanceof Game && curr instanceof Practice) {
+                if (curr == ((Game) a).getAssociatedPractice()) {
+                    return false;
+                }
+            } else if (a instanceof Practice && curr instanceof Game) {
+                if (a == ((Game) curr).getAssociatedPractice()) {
+                    return false;
+                }
+            }
         }
 
         return true;
@@ -315,7 +349,6 @@ public class Main {
                     return u.getActivity();
                 }
             }
-
 //            return data.getUnwanteds().get(0).getActivity();
         }
 
@@ -340,17 +373,22 @@ public class Main {
     }
 
     private static void printResults(ANode root) {
-        ANode best = root;
+        ANode best;
+        if (root.getSol() == Sol.yes) {
+            best = root;
+        } else {
+            best = null;
+        }
 
         for (ANode n : completedNodes) {
+            if (best == null && n.getSol() == Sol.yes) {
+                best = n;
+            }
             if (n.isLeaf()) {
-                if (best == null) {
+                if (best != null && eval(n) < eval(best)) {
                     best = n;
-                } else {
-                    if (eval(n) < eval(best)) {
-                        best = n;
-                    }
                 }
+
             }
         }
         System.out.println(printOutput(best));
@@ -364,7 +402,7 @@ public class Main {
 
         for (Slot s : node.getSlots()) {
             for (Activity a : s.getActivities()) {
-                sorted.put(a.getIdentifier(), s.getDay().getShortCode() + ", " + s.getStartTime());
+                sorted.put(a.getFullIdentifier(), s.getDay().getShortCode() + ", " + s.getStartTime());
             }
         }
 
