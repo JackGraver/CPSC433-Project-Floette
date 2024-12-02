@@ -14,9 +14,4 @@ public class Game extends Activity {
     public void setAssociatedPractice(Practice p) {
         this.associatedPractice = p;
     }
-
-    @Override
-    public String toString() {
-        return super.toString() + " with associated practice: " + associatedPractice;
-    }
 }

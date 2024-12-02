@@ -171,6 +171,7 @@ public class Setup {
     }
 
     private static Activity findActivity(String identifier, ArrayList<Activity> activities) {
+        identifier = identifier.trim();
         for (Activity a : activities) {
             if (a.getFullIdentifier().equals(identifier)) {
                 return a;
