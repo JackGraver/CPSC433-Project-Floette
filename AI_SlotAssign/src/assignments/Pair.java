@@ -12,9 +12,4 @@ public class Pair {
     public Activity getPairedActivity() {
         return pairedActivity;
     }
-
-//    @Override
-//    public String toString() {
-//        return getActivityOne() + " with " + getActivityTwo();
-//    }
 }

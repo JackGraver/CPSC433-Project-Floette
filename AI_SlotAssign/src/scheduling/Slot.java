@@ -174,6 +174,4 @@ public class Slot {
     public String toString() {
         return "[" + id + "] (" + type + ") " + day + " @" + startTime + "-" + endTime + " | Max Filled: " + max + ", Min Filed: " + min;
     }
-
-
 }

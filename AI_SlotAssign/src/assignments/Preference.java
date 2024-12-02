@@ -1,6 +1,5 @@
 package assignments;
 
-import scheduling.Activity;
 import scheduling.Slot;
 
 public class Preference {

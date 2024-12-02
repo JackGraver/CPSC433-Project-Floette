@@ -49,10 +49,6 @@ public class Data {
         this.partials = new ArrayList<>();
     }
 
-    public String getProblemName() {
-        return problemName;
-    }
-
     public int getW_minfilled() {
         return w_minfilled;
     }
