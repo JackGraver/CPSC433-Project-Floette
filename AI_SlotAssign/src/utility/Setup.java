@@ -42,7 +42,7 @@ public class Setup {
         // int pen_notpaired = Integer.parseInt(args[7]);
         // int pen_section = Integer.parseInt(args[8]);
 
-        Scanner sc = new Scanner(new File("/Users/darpalpatel/Desktop/HCtest5-6.txt"));
+        Scanner sc = new Scanner(new File("/Users/darpalpatel/Desktop/HCtest10-11.txt"));
         // Scanner sc = new Scanner(new File(args[0]));
 
         sc.nextLine();
