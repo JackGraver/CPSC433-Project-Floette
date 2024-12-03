@@ -219,15 +219,17 @@ public class Main {
                         || curr.getAgeGroup().startsWith("U16")
                         || curr.getAgeGroup().startsWith("U17")
                         || curr.getAgeGroup().startsWith("U19")) {
+                    System.out.println("\t\tfailed cause U15, U16, U17, U19 collision");
                     return false;
                 }
             }
         }
 
         for (Slot s : node.getSlots()) {
-            if (s.getStartTime() == slot.getStartTime() && s != slot) {
+            if (s.getStartTime() == slot.getStartTime() && s.getDay() == slot.getDay() && s != slot) {
                 for (Activity a : s.getActivities()) {
                     if (a.getDivision() == curr.getDivision()) {
+                        System.out.println("\t\tFailed cause same division collision ");
                         return false;
                     }
                 }
@@ -245,15 +247,18 @@ public class Main {
         for (Activity a : slot.getActivities()) {
             if (a instanceof Game && curr instanceof Practice) {
                 if (curr == ((Game) a).getAssociatedPractice()) {
+                    System.out.println("\t\tFailed cause associated practice");
                     return false;
                 }
             } else if (a instanceof Practice && curr instanceof Game) {
                 if (a == ((Game) curr).getAssociatedPractice()) {
+                    System.out.println("\t\tFailed cause associated practice");
                     return false;
                 }
             }
         }
 
+        System.out.println("\t\tNo violations");
         return true;
     }
 
@@ -359,27 +364,32 @@ public class Main {
     }
 
     private static void printResults(ANode root) {
-        ANode best;
-        if (root.getSol() == Sol.yes) {
-            best = root;
-        } else {
-            best = null;
-        }
+        ANode best = null;
 
         for (ANode n : completedNodes) {
-            if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
-                if (best == null && n.getSol() == Sol.yes) {
-                    best = n;
-                }
-                if (n.isLeaf()) {
-                    if (best != null && eval(n) < eval(best)) {
+            if (n.getSol() == Sol.yes) {
+                if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
+                    if (n.isLeaf()) {
                         best = n;
                     }
                 }
             }
-
+//            if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
+//                if (best == null && n.getSol() == Sol.yes) {
+//                    best = n;
+//                }
+//                if (n.isLeaf()) {
+//                    if (best != null && eval(n) < eval(best)) {
+//                        best = n;
+//                    }
+//                }
+//            }=
         }
-        System.out.println(printOutput(best));
+        if (best != null) {
+            System.out.println(printOutput(best));
+        } else {
+            System.out.println("No solution found.");
+        }
     }
 
     private static String printOutput(ANode node) {
