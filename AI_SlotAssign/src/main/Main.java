@@ -15,6 +15,8 @@ import utility.Setup;
 import java.io.FileNotFoundException;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.TreeMap;
 
 public class Main {
@@ -381,14 +383,22 @@ public class Main {
     private static void printResults() {
         ANode best = null;
 
+        completedNodes.sort((a, b) -> -1 * Integer.compare(a.numberActivitiesAssigned(), b.numberActivitiesAssigned()));
+
         for (ANode n : completedNodes) {
             if (n.getSol() == Sol.yes) {
                 if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
                     if (n.isLeaf()) {
-                        System.out.println("n: " + eval(n) + ", best: " + eval(best));
-                        if (eval(n) <= eval(best)) {
+                        if (best == null) {
                             best = n;
+                        } else {
+                            if (eval(n) < eval(best)) {
+                                if (n.numberActivitiesAssigned() >= best.numberActivitiesAssigned()) {
+                                    best = n;
+                                }
+                            }
                         }
+
                     }
                 }
             }
@@ -425,5 +435,17 @@ public class Main {
         sorted.forEach((key, value) -> out.append(key).append(" : ").append(value).append("\n"));
 
         return out.toString();
+    }
+}
+
+class SortByAssigned implements Comparator<ANode> {
+    public int compare(ANode one, ANode two) {
+        if (one.numberActivitiesAssigned() < two.numberActivitiesAssigned()) {
+            return -1;
+        }
+        if (one.numberActivitiesAssigned() > two.numberActivitiesAssigned()) {
+            return 1;
+        }
+        return 0;
     }
 }
