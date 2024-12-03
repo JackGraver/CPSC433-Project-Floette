@@ -51,7 +51,7 @@ public class Main {
             ANode expansion_node = f_leaf(); // get next node to expand (f_leaf)
             System.out.println("\tExpanding Node: " + expansion_node);
             Activity placement_activity = f_trans(expansion_node); // get next activity to place in expanded node
-                                                                   // (f_trans)
+            // (f_trans)
             System.out.println("\tPlacing activity: " + placement_activity);
 
             if (div(expansion_node, placement_activity) == 0) {// handle expansion
@@ -80,7 +80,7 @@ public class Main {
         System.out.println("---Div---");
         int branches = 0;
         ArrayList<Integer> assigned = new ArrayList<>(); // make sure we don't choose the same slot for each expansion
-                                                         // leaf (could use better solution)
+        // leaf (could use better solution)
 
         // loop through number of slots (n) to potentially create n children nodes
         for (int i = 0; i < node.getSlots().size(); i++) {
@@ -123,7 +123,7 @@ public class Main {
      * @param slot   - slot of child activity is being added to
      * @param curr   - activity being added
      * @return if assignment was successful
-     *         \
+     * \
      */
     private static boolean assignActivityToSlot(ANode parent, ANode child, Slot slot, Activity curr) {
         if (noHardConstraintViolations(slot, curr, child)) {
@@ -367,15 +367,17 @@ public class Main {
         }
 
         for (ANode n : completedNodes) {
-            if (best == null && n.getSol() == Sol.yes) {
-                best = n;
-            }
-            if (n.isLeaf()) {
-                if (best != null && eval(n) < eval(best)) {
+            if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
+                if (best == null && n.getSol() == Sol.yes) {
                     best = n;
                 }
-
+                if (n.isLeaf()) {
+                    if (best != null && eval(n) < eval(best)) {
+                        best = n;
+                    }
+                }
             }
+
         }
         System.out.println(printOutput(best));
     }

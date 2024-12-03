@@ -60,6 +60,14 @@ public class ANode {
         return children.isEmpty();
     }
 
+    public int numberActivitiesAssigned() {
+        int n = 0;
+        for (Slot s : slots) {
+            n += s.getActivities().size();
+        }
+        return n;
+    }
+
     /**
      * Eval function to check how for each slot the number of activities assigned compared to minimum needed for slot
      *
