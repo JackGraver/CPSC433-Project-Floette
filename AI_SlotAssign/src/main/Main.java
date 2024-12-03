@@ -385,7 +385,8 @@ public class Main {
             if (n.getSol() == Sol.yes) {
                 if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
                     if (n.isLeaf()) {
-                        if (eval(n) < eval(best)) {
+                        System.out.println("n: " + eval(n) + ", best: " + eval(best));
+                        if (eval(n) <= eval(best)) {
                             best = n;
                         }
                     }

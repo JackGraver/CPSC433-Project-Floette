@@ -71,6 +71,7 @@ public class Setup {
 
         // Practices
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+            System.out.println("prac line: " + line);
             Practice prac = new Practice(line);
             Game g;
             if ((g = findAssociatedGame(prac, data.getActivities())) != null) {
@@ -119,7 +120,7 @@ public class Setup {
             String day = split[0];
             String time = split[1];
             String activityID = split[2];
-            int preference = Integer.parseInt(split[3]);
+            int preference = Integer.parseInt(split[3].trim());
 
             Activity a = findActivity(activityID, data.getActivities());
             Slot s = findSlot(day, time, data.getSlots());

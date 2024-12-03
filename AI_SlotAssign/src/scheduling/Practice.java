@@ -10,6 +10,6 @@ public class Practice extends Activity {
 
     private void parse(String identifier) {
         String[] split = identifier.split(" ");
-        number = Integer.parseInt(split[5].trim());
+        number = Integer.parseInt(split[split.length - 1].trim());
     }
 }
