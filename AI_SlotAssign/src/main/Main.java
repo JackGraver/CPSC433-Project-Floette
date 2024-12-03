@@ -203,8 +203,10 @@ public class Main {
             }
         }
 
+        System.out.println(
+                "THIS IS THE DIVISION: " + curr.getDivision() + " SLot: " + slot.getStartTime() + slot.isEveningSlot());
         if (curr.getDivision() == 9) {
-            if (slot.isEveningSlot()) {
+            if (!slot.isEveningSlot()) {
                 System.out.println("\t\tViolates evening slot");
                 return false;
             }

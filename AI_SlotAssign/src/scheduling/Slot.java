@@ -41,7 +41,8 @@ public class Slot {
      */
     private int max;
     /**
-     * Minimum number of activities that must be assigned to slot (to avoid penalties)
+     * Minimum number of activities that must be assigned to slot (to avoid
+     * penalties)
      */
     private int min;
     /**
@@ -56,7 +57,8 @@ public class Slot {
 
     /**
      * Slot Constructor
-     * <br>- Initializes activites to empty array
+     * <br>
+     * - Initializes activites to empty array
      *
      * @param type type
      * @param day  day
@@ -168,10 +170,11 @@ public class Slot {
     }
 
     public boolean isEveningSlot() {
-        return eveningSlot;
+        return startTime.isAfter(LocalTime.of(18, 0));
     }
 
     public String toString() {
-        return "[" + id + "] (" + type + ") " + day + " @" + startTime + "-" + endTime + " | Max Filled: " + max + ", Min Filed: " + min;
+        return "[" + id + "] (" + type + ") " + day + " @" + startTime + "-" + endTime + " | Max Filled: " + max
+                + ", Min Filed: " + min;
     }
 }
