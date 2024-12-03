@@ -120,7 +120,7 @@ public class Main {
      * \
      */
     private static boolean assignActivityToSlot(ANode parent, ANode child, Slot slot, Activity curr) {
-        if (noHardConstraintViolations(slot, curr)) {
+        if (noHardConstraintViolations(slot, curr, child)) {
             System.out.println("\t\tAssign " + curr + " to " + slot);
             slot.addActivity(curr);
             if (slot.getDay() == Days.MO) {
@@ -158,7 +158,7 @@ public class Main {
         return false;
     }
 
-    private static boolean noHardConstraintViolations(Slot slot, Activity curr) {
+    private static boolean noHardConstraintViolations(Slot slot, Activity curr, ANode node) {
         System.out.println("\tChecking Hard Constraint Violations of " + slot + " for " + curr + " assignment");
         if (slot.isFull()) { //1&2) Not more than gamemax(s)/practicemax(s) activities assigned to each slot
             return false; //violates constraint
@@ -218,11 +218,17 @@ public class Main {
             }
         }
 
-        for (Activity a : slot.getActivities()) {
-            if (a.getDivision() == curr.getDivision()) {
-                return false;
+        for (Slot s : node.getSlots()) {
+            if (s.getStartTime() == slot.getStartTime() && s != slot) {
+                for (Activity a : s.getActivities()) {
+                    if (a.getDivision() == curr.getDivision()) {
+                        return false;
+                    }
+                }
             }
+
         }
+
 
         if (curr instanceof Game
                 && slot.getDay() == Days.TU
