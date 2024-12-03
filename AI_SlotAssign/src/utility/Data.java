@@ -28,6 +28,7 @@ public class Data {
     private final ArrayList<Preference> preferences;
     private final ArrayList<Pair> pairs;
     private final ArrayList<Partial> partials;
+    private final ArrayList<Evening> eveningActivities;
 
     public Data(String name, int w_minfilled, int w_pref, int w_pair, int w_secdiff,
                 int pen_gamemin, int pen_practicemin, int pen_notpaired, int pen_section) {
@@ -47,6 +48,7 @@ public class Data {
         this.preferences = new ArrayList<>();
         this.pairs = new ArrayList<>();
         this.partials = new ArrayList<>();
+        this.eveningActivities = new ArrayList<>();
     }
 
     public int getW_minfilled() {
@@ -117,6 +119,10 @@ public class Data {
         return partials;
     }
 
+    public ArrayList<Evening> getEveningActivities() {
+        return eveningActivities;
+    }
+
     public void addCompatible(NotCompatible compatible) {
         notcompatibles.add(compatible);
     }
@@ -143,7 +149,10 @@ public class Data {
 //        notcompatibles.removeIf(nc -> nc.getActivityOne() == a);
 //        notcompatibles.removeIf(nc -> nc.getActivityTwo() == a);
         unwanteds.removeIf(un -> un.getActivity() == a);
+        eveningActivities.removeIf(e -> e.getActivity() == a);
 //        preferences.removeIf(p -> p.getActivity() == a);
+        pairs.removeIf(p -> p.getActivityOne() == a);
+        pairs.removeIf(p -> p.getActivityOne() == a);
     }
 
     public String toString() {

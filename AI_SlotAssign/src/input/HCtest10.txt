@@ -21,4 +21,5 @@ Unwanted:
 CMSA U13T3 DIV 02, MO, 8:00
 Preferences:
 Pair:
+CMSA U15T1 DIV 01, CMSA U17T3 DIV 02
 Partial assignments:

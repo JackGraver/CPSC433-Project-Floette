@@ -1,5 +1,6 @@
 package main;
 
+import assignments.*;
 import enums.Days;
 import enums.SlotType;
 import enums.Sol;
@@ -16,10 +17,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import assignments.NotCompatible;
-import assignments.Partial;
-import assignments.Unwanted;
-
 public class Main {
 
     public static Data data;
@@ -29,7 +26,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         try {
             data = Setup.setup(args); // load data from given file
-            System.out.println(data);
+            System.out.println(data.getPairs().size());
         } catch (FileNotFoundException e) {
             System.out.println("Invalid file! Exiting Program.");
             System.exit(0);
@@ -50,11 +47,10 @@ public class Main {
             }
             ANode expansion_node = f_leaf(); // get next node to expand (f_leaf)
             System.out.println("\tExpanding Node: " + expansion_node);
-            Activity placement_activity = f_trans(expansion_node); // get next activity to place in expanded node
-            // (f_trans)
+            Activity placement_activity = f_trans(expansion_node); // get next activity to place in expanded node (f_trans)
             System.out.println("\tPlacing activity: " + placement_activity);
 
-            if (div(expansion_node, placement_activity) == 0) {// handle expansion
+            if (div(expansion_node, placement_activity) == 0) { // handle expansion
                 expansion_node.setSol(Sol.yes);
             }
             if (placement_activity == null) {
@@ -67,7 +63,7 @@ public class Main {
             completedNodes.add(expansion_node);
         }
         System.out.println(root);
-        printResults(root);
+        printResults();
     }
 
     /**
@@ -123,7 +119,7 @@ public class Main {
      * @param slot   - slot of child activity is being added to
      * @param curr   - activity being added
      * @return if assignment was successful
-     *         \
+     * \
      */
     private static boolean assignActivityToSlot(ANode parent, ANode child, Slot slot, Activity curr) {
         if (noHardConstraintViolations(slot, curr, child)) {
@@ -167,6 +163,7 @@ public class Main {
     private static boolean noHardConstraintViolations(Slot slot, Activity curr, ANode node) {
         System.out.println("\tChecking Hard Constraint Violations of " + slot + " for " + curr + " assignment");
         if (slot.isFull()) { // 1&2) Not more than gamemax(s)/practicemax(s) activities assigned to each slot
+            System.out.println("\t\tViolates full slot");
             return false; // violates constraint
         }
 
@@ -236,7 +233,6 @@ public class Main {
                     }
                 }
             }
-
         }
 
         if (curr instanceof Game
@@ -334,6 +330,20 @@ public class Main {
             }
         }
 
+        for (Evening e : data.getEveningActivities()) {
+            if (notAlreadyAssigned(node, e.getActivity())) {
+                return e.getActivity();
+            }
+        }
+
+        for (Pair p : data.getPairs()) {
+            if (notAlreadyAssigned(node, p.getActivityOne())) {
+                return p.getActivityOne();
+            } else if (notAlreadyAssigned(node, p.getActivityTwo())) {
+                return p.getActivityTwo();
+            }
+        }
+
         for (Activity ac : data.getActivities()) {
             if (notAlreadyAssigned(node, ac)) {
                 System.out.println("Chosen as smallest i (3.9) (3.10)");
@@ -359,20 +369,25 @@ public class Main {
     }
 
     private static int eval(ANode node) {
+        if (node == null) {
+            return Integer.MAX_VALUE;
+        }
         return (node.eval_minfilled(data.getPen_gamemin(), data.getPen_practicemin()) * data.getW_minfilled())
                 + (node.eval_pref(1) * data.getW_pref())
                 + (node.eval_pair(data.getPen_notpaired()) * data.getW_pair())
                 + (node.eval_secdiff(data.getPen_section()) * data.getW_secdiff());
     }
 
-    private static void printResults(ANode root) {
+    private static void printResults() {
         ANode best = null;
 
         for (ANode n : completedNodes) {
             if (n.getSol() == Sol.yes) {
                 if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
                     if (n.isLeaf()) {
-                        best = n;
+                        if (eval(n) < eval(best)) {
+                            best = n;
+                        }
                     }
                 }
             }

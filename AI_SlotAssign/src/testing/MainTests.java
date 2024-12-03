@@ -1,11 +1,15 @@
 package testing;
 
+import enums.Days;
 import main.Main;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import scheduling.Activity;
+import scheduling.GameSlot;
+import scheduling.Slot;
 import utility.Data;
 
+import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,8 +45,9 @@ public class MainTests {
 
     @Test
     public void other() {
-        String line = "  CMSA  U13T3 DIV    01    ";
-        System.out.println(line.replaceAll("\\s{2,}", " ").trim());
+        GameSlot slot = new GameSlot(Days.MO, "18:00", 2, 1);
+        System.out.println(slot);
+        System.out.println(slot.isEveningSlot());
     }
 
     @Test
