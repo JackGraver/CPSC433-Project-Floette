@@ -12,7 +12,7 @@ public abstract class Activity {
     private String ageGroup;
     private int division;
     private Preference preference;
-    private Pair pair;
+    private Activity pair;
 
     public Activity(String identifier) {
         this.fullIdentifier = identifier.replaceAll("\\s{2,}", " ").trim();
@@ -58,11 +58,11 @@ public abstract class Activity {
         this.preference = preference;
     }
 
-    public Pair getPair() {
+    public Activity getPair() {
         return pair;
     }
 
-    public void setPair(Pair pair) {
+    public void setPair(Activity pair) {
         this.pair = pair;
     }
 }
