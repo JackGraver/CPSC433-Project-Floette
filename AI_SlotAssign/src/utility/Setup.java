@@ -13,25 +13,38 @@ import java.util.Scanner;
 
 public class Setup {
 
-    private static String[] mwfGamePracTimes = {"8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"};
-    private static String[] fPracTimes = {"8:00", "10:00", "12:00", "14:00", "16:00", "18:00"};
-    private static String[] ttrGamesTimes = {"8:00", "9:30", "11:00", "12:30", "14:00", "15:30", "17:00", "18:30"};
+    private static String[] mwfGamePracTimes = { "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
+            "16:00", "17:00", "18:00", "19:00", "20:00" };
+    private static String[] fPracTimes = { "8:00", "10:00", "12:00", "14:00", "16:00", "18:00" };
+    private static String[] ttrGamesTimes = { "8:00", "9:30", "11:00", "12:30", "14:00", "15:30", "17:00", "18:30" };
 
     public static Data setup(String[] args) throws FileNotFoundException {
         if (args.length < 8) {
             System.out.println("Invalid command line arguments.");
-            System.exit(0);
+            // System.exit(0);
         }
-        int w_minfilled = Integer.parseInt(args[1]);
-        int w_pref = Integer.parseInt(args[2]);
-        int w_pair = Integer.parseInt(args[3]);
-        int w_secdiff = Integer.parseInt(args[4]);
-        int pen_gamemin = Integer.parseInt(args[5]);
-        int pen_practicemin = Integer.parseInt(args[6]);
-        int pen_notpaired = Integer.parseInt(args[7]);
-        int pen_section = Integer.parseInt(args[8]);
 
-        Scanner sc = new Scanner(new File(args[0]));
+        int w_minfilled = 1;
+        int w_pref = 0;
+        int w_pair = 1;
+        int w_secdiff = 0;
+        int pen_gamemin = 10;
+        int pen_practicemin = 10;
+        int pen_notpaired = 10;
+        int pen_section = 10;
+
+        // int w_minfilled = Integer.parseInt(args[1]);
+        // int w_pref = Integer.parseInt(args[2]);
+        // int w_pair = Integer.parseInt(args[3]);
+        // int w_secdiff = Integer.parseInt(args[4]);
+        // int pen_gamemin = Integer.parseInt(args[5]);
+        // int pen_practicemin = Integer.parseInt(args[6]);
+        // int pen_notpaired = Integer.parseInt(args[7]);
+        // int pen_section = Integer.parseInt(args[8]);
+
+        Scanner sc = new Scanner(new File("/Users/darpalpatel/Desktop/HCtest5-6.txt"));
+        // Scanner sc = new Scanner(new File(args[0]));
+
         sc.nextLine();
         String name = sc.nextLine();
         Data data = new Data(name, w_minfilled, w_pref, w_pair, w_secdiff,
@@ -39,30 +52,30 @@ public class Setup {
 
         sc.nextLine();
         String line;
-        //Game Slots
+        // Game Slots
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             GameSlot game = (GameSlot) createActivity(line, true);
 
-//            if (checkValidGameTime(time, date)) {
+            // if (checkValidGameTime(time, date)) {
             data.addSlot(game);
-//            }
+            // }
         }
 
-        //Practice Slots
+        // Practice Slots
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             PracticeSlot prac = (PracticeSlot) createActivity(line, false);
 
-//            if (checkValidPracticeTime(time)) {
+            // if (checkValidPracticeTime(time)) {
             data.addSlot(prac);
-//            }
+            // }
         }
 
-        //Games
+        // Games
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             data.addActivity(new Game(line));
         }
 
-        //Practices
+        // Practices
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             Practice prac = new Practice(line);
             Game g;
@@ -72,7 +85,7 @@ public class Setup {
             data.addActivity(new Practice(line));
         }
 
-        //Not Compatible
+        // Not Compatible
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
@@ -85,21 +98,27 @@ public class Setup {
             }
         }
 
-        //Unwanted
+        // Unwanted
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
+            System.out.println("Processing line for Unwanted: " + line);
+
             String[] split = line.split(",");
+            System.out.println("split: " + split[0] + " " + split[1] + " " + split[2]);
 
             Activity a = findActivity(split[0], data.getActivities());
+            System.out.println("Processing line for Unwanted: " + data.getSlots());
 
             Slot s = findSlot(split[1], split[2], data.getSlots());
-
+            // System.out.println("Processing line for Unwanted: " + a.getFullIdentifier() +
+            // " " + s.getStartTime());
             if (a != null && s != null) {
                 data.addUnwanted(new Unwanted(a, s));
             }
+            break;
         }
 
-        //Preferences
+        // Preferences
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
@@ -117,7 +136,7 @@ public class Setup {
             }
         }
 
-        //Pairs
+        // Pairs
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
@@ -131,7 +150,7 @@ public class Setup {
             }
         }
 
-        //Partials
+        // Partials
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
@@ -184,8 +203,8 @@ public class Setup {
         String[] split = time.replace(" ", "").split(":");
         LocalTime checkTime = LocalTime.of(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
         for (Slot s : slots) {
-            if (s.getDay().getShortCode().equals(date)
-                    && s.getStartTime() == checkTime) {
+            if (s.getDay().getShortCode().trim().equalsIgnoreCase(date.trim())
+                    && s.getStartTime().equals(checkTime)) {
                 return s;
             }
         }
