@@ -3,13 +3,19 @@ package assignments;
 import scheduling.Activity;
 
 public class Pair {
-    private Activity pairedActivity;
+    private Activity activityOne;
+    private Activity activityTwo;
 
-    public Pair(Activity pairedActivity) {
-        this.pairedActivity = pairedActivity;
+    public Pair(Activity activityOne, Activity activityTwo) {
+        this.activityOne = activityOne;
+        this.activityTwo = activityTwo;
     }
 
-    public Activity getPairedActivity() {
-        return pairedActivity;
+    public Activity getActivityOne() {
+        return activityOne;
+    }
+
+    public Activity getActivityTwo() {
+        return activityTwo;
     }
 }

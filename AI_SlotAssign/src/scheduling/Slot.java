@@ -170,7 +170,7 @@ public class Slot {
     }
 
     public boolean isEveningSlot() {
-        return startTime.isAfter(LocalTime.of(18, 0));
+        return startTime.isAfter(LocalTime.of(17, 59));
     }
 
     public String toString() {

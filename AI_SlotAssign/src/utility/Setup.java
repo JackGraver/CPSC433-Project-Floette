@@ -13,10 +13,10 @@ import java.util.Scanner;
 
 public class Setup {
 
-    private static String[] mwfGamePracTimes = { "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
-            "16:00", "17:00", "18:00", "19:00", "20:00" };
-    private static String[] fPracTimes = { "8:00", "10:00", "12:00", "14:00", "16:00", "18:00" };
-    private static String[] ttrGamesTimes = { "8:00", "9:30", "11:00", "12:30", "14:00", "15:30", "17:00", "18:30" };
+    private static String[] mwfGamePracTimes = {"8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00",
+            "16:00", "17:00", "18:00", "19:00", "20:00"};
+    private static String[] fPracTimes = {"8:00", "10:00", "12:00", "14:00", "16:00", "18:00"};
+    private static String[] ttrGamesTimes = {"8:00", "9:30", "11:00", "12:30", "14:00", "15:30", "17:00", "18:30"};
 
     public static Data setup(String[] args) throws FileNotFoundException {
         if (args.length < 8) {
@@ -62,7 +62,11 @@ public class Setup {
 
         // Games
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            data.addActivity(new Game(line));
+            Game game = new Game(line);
+            data.addActivity(game);
+            if (game.getDivision() == 9) {
+                data.getEveningActivities().add(new Evening(game));
+            }
         }
 
         // Practices
@@ -73,6 +77,9 @@ public class Setup {
                 g.setAssociatedPractice(prac);
             }
             data.addActivity(new Practice(line));
+            if (prac.getDivision() == 9) {
+                data.getEveningActivities().add(new Evening(prac));
+            }
         }
 
         // Not Compatible
@@ -91,13 +98,10 @@ public class Setup {
         // Unwanted
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
-            System.out.println("Processing line for Unwanted: " + line);
 
             String[] split = line.split(",");
-            System.out.println("split: " + split[0] + " " + split[1] + " " + split[2]);
 
             Activity a = findActivity(split[0], data.getActivities());
-            System.out.println("Processing line for Unwanted: " + data.getSlots());
 
             Slot s = findSlot(split[1], split[2], data.getSlots());
             // System.out.println("Processing line for Unwanted: " + a.getFullIdentifier() +
@@ -105,7 +109,6 @@ public class Setup {
             if (a != null && s != null) {
                 data.addUnwanted(new Unwanted(a, s));
             }
-            break;
         }
 
         // Preferences
@@ -131,12 +134,17 @@ public class Setup {
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
+            System.out.println("pair split: " + Arrays.toString(split));
+
             Activity a1 = findActivity(split[0], data.getActivities());
             Activity a2 = findActivity(split[1], data.getActivities());
 
+            System.out.println("pair a1: " + a1 + ", a2: " + a2);
+
             if (a1 != null && a2 != null) {
-                a1.setPair(new Pair(a2));
-                a2.setPair(new Pair(a1));
+//                a1.setPair(new Pair(a2));
+//                a2.setPair(new Pair(a1));
+                data.addPair(new Pair(a1, a2));
             }
         }
 
