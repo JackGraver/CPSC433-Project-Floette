@@ -71,7 +71,6 @@ public class Setup {
 
         // Practices
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            System.out.println("prac line: " + line);
             Practice prac = new Practice(line);
             Game g;
             if ((g = findAssociatedGame(prac, data.getActivities())) != null) {
@@ -105,8 +104,6 @@ public class Setup {
             Activity a = findActivity(split[0], data.getActivities());
 
             Slot s = findSlot(split[1], split[2], data.getSlots());
-            // System.out.println("Processing line for Unwanted: " + a.getFullIdentifier() +
-            // " " + s.getStartTime());
             if (a != null && s != null) {
                 data.addUnwanted(new Unwanted(a, s));
             }
@@ -135,12 +132,8 @@ public class Setup {
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
-            System.out.println("pair split: " + Arrays.toString(split));
-
             Activity a1 = findActivity(split[0], data.getActivities());
             Activity a2 = findActivity(split[1], data.getActivities());
-
-            System.out.println("pair a1: " + a1 + ", a2: " + a2);
 
             if (a1 != null && a2 != null) {
                 a1.setPair(a2);

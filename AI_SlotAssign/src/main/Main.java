@@ -14,10 +14,7 @@ import utility.Setup;
 
 import java.io.FileNotFoundException;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Main {
 
@@ -28,7 +25,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
         try {
             data = Setup.setup(args); // load data from given file
-            System.out.println(data.getPairs().size());
         } catch (FileNotFoundException e) {
             System.out.println("Invalid file! Exiting Program.");
             System.exit(0);
@@ -42,21 +38,13 @@ public class Main {
 
         // is a for loop for testing
         while (!nodeQueue.isEmpty()) { // while there are nodes to expand (not sol = yes)
-            System.out.println("---Main Loop---");
-            System.out.println(root);
-            for (ANode n : nodeQueue) {
-                System.out.println("\t" + n.printSolo());
-            }
             ANode expansion_node = f_leaf(); // get next node to expand (f_leaf)
-            System.out.println("\tExpanding Node: " + expansion_node);
             Activity placement_activity = f_trans(expansion_node); // get next activity to place in expanded node (f_trans)
-            System.out.println("\tPlacing activity: " + placement_activity);
 
             if (div(expansion_node, placement_activity) == 0) { // handle expansion
                 expansion_node.setSol(Sol.yes);
             }
             if (placement_activity == null) {
-                System.out.println("No more activities to assign. Soling " + expansion_node + " to yes");
                 expansion_node.setSol(Sol.yes);
             }
 
@@ -64,7 +52,6 @@ public class Main {
             nodeQueue.remove(expansion_node);
             completedNodes.add(expansion_node);
         }
-        System.out.println(root);
         printResults();
     }
 
@@ -75,17 +62,14 @@ public class Main {
      * @param curr - activity being assigned to slots
      */
     private static int div(ANode node, Activity curr) {
-        System.out.println("---Div---");
         int branches = 0;
         ArrayList<Integer> assigned = new ArrayList<>(); // make sure we don't choose the same slot for each expansion
         // leaf (could use better solution)
 
         // loop through number of slots (n) to potentially create n children nodes
         for (int i = 0; i < node.getSlots().size(); i++) {
-            System.out.println("\tTop div loop");
             ANode child = new ANode(node.getSlots());
             for (Slot slot : child.getSlots()) {
-                System.out.println("\t\tInside div loop");
                 if (!assigned.contains(child.getSlots().indexOf(slot))) {
                     // check if it's the correct type of slot (Game Slot for Games, Prac slot for
                     // Practices)
@@ -105,7 +89,6 @@ public class Main {
                 }
             }
         }
-        System.out.println("Created " + branches + " branches");
         return branches;
     }
 
@@ -125,24 +108,19 @@ public class Main {
      */
     private static boolean assignActivityToSlot(ANode parent, ANode child, Slot slot, Activity curr) {
         if (noHardConstraintViolations(slot, curr, child)) {
-            System.out.println("\t\tAssign " + curr + " to " + slot);
             slot.addActivity(curr);
             if (slot.getDay() == Days.MO) {
                 for (Slot s : child.getSlots()) {
                     if (s.getDay() == Days.WE && s.getStartTime().equals(slot.getStartTime())) {
                         if (curr instanceof Game && s.isGame()) {
-                            System.out.println("\t\t\tAdded corresponding WE Slot");
                             s.addActivity(curr);
                         } else if (curr instanceof Practice && !s.isGame()) {
-                            System.out.println("\t\t\tAdded corresponding WE Slot");
                             s.addActivity(curr);
                         }
                     } else if (s.getDay() == Days.FR && s.getStartTime().equals(slot.getStartTime())) {
                         if (curr instanceof Game && s.isGame()) {
-                            System.out.println("\t\t\tAdded corresponding FR Slot");
                             s.addActivity(curr);
                         } else if (curr instanceof Practice && !s.isGame()) {
-                            System.out.println("\t\t\tAdded corresponding FR Slot");
                             s.addActivity(curr);
                         }
                     }
@@ -150,7 +128,6 @@ public class Main {
             } else if (slot.getDay() == Days.TU) {
                 for (Slot s : child.getSlots()) {
                     if (s.getDay() == Days.TR && s.getStartTime().equals(slot.getStartTime())) {
-                        System.out.println("\t\t\tAdded corresponding TR Slot");
                         s.addActivity(curr);
                     }
                 }
@@ -163,9 +140,7 @@ public class Main {
     }
 
     private static boolean noHardConstraintViolations(Slot slot, Activity curr, ANode node) {
-        System.out.println("\tChecking Hard Constraint Violations of " + slot + " for " + curr + " assignment");
         if (slot.isFull()) { // 1&2) Not more than gamemax(s)/practicemax(s) activities assigned to each slot
-            System.out.println("\t\tViolates full slot");
             return false; // violates constraint
         }
 
@@ -173,12 +148,10 @@ public class Main {
         for (NotCompatible nc : data.getNotCompatibles()) { // check all not compatibles
             if (nc.getActivityOne() == curr) { // if activity to be added is one of the not compatible activities
                 if (slot.getActivities().contains(nc.getActivityTwo())) { // and the other activity already in slot
-                    System.out.println("\t\tViolates Not Compatible 1");
                     return false; // violates constraint
                 }
             } else if (nc.getActivityTwo() == curr) { // if activity to be added is one of the not compatible activities
                 if (slot.getActivities().contains(nc.getActivityOne())) { // and the other activity already in slot
-                    System.out.println("\t\tViolates Not Compatible 2");
                     return false; // violates constraint
                 }
             }
@@ -187,7 +160,6 @@ public class Main {
         for (Partial p : data.getPartials()) {
             if (p.getActivity() == curr) { // if there is a partial assignment for this activity
                 if (p.getSlot().getID() != slot.getID()) { // not the correct slot for partial assignment
-                    System.out.println("\t\tViolates Partial");
                     return false; // violates constraint
                 }
             }
@@ -196,17 +168,13 @@ public class Main {
         for (Unwanted u : data.getUnwanteds()) {
             if (u.getActivity() == curr) { // exists an unwanted assignment containing this activity
                 if (u.getSlot().getID() == slot.getID()) {
-                    System.out.println("\t\tViolates Unwanted");
                     return false; // violates constraint
                 }
             }
         }
 
-        System.out.println(
-                "THIS IS THE DIVISION: " + curr.getDivision() + " SLot: " + slot.getStartTime() + slot.isEveningSlot());
         if (curr.getDivision() == 9) {
             if (!slot.isEveningSlot()) {
-                System.out.println("\t\tViolates evening slot");
                 return false;
             }
         }
@@ -220,7 +188,6 @@ public class Main {
                         || curr.getAgeGroup().startsWith("U16")
                         || curr.getAgeGroup().startsWith("U17")
                         || curr.getAgeGroup().startsWith("U19")) {
-                    System.out.println("\t\tfailed cause U15, U16, U17, U19 collision");
                     return false;
                 }
             }
@@ -230,7 +197,6 @@ public class Main {
             if (s.getStartTime() == slot.getStartTime() && s.getDay() == slot.getDay() && s != slot) {
                 for (Activity a : s.getActivities()) {
                     if (a.getDivision() == curr.getDivision()) {
-                        System.out.println("\t\tFailed cause same division collision ");
                         return false;
                     }
                 }
@@ -240,25 +206,21 @@ public class Main {
         if (curr instanceof Game
                 && slot.getDay() == Days.TU
                 && slot.getStartTime() == LocalTime.of(11, 0)) {
-            System.out.println("\t\tViolates \"Meeting time\"");
             return false;
         }
 
         for (Activity a : slot.getActivities()) {
             if (a instanceof Game && curr instanceof Practice) {
                 if (curr == ((Game) a).getAssociatedPractice()) {
-                    System.out.println("\t\tFailed cause associated practice");
                     return false;
                 }
             } else if (a instanceof Practice && curr instanceof Game) {
                 if (a == ((Game) curr).getAssociatedPractice()) {
-                    System.out.println("\t\tFailed cause associated practice");
                     return false;
                 }
             }
         }
 
-        System.out.println("\t\tNo violations");
         return true;
     }
 
@@ -300,7 +262,6 @@ public class Main {
         if (!data.getPartials().isEmpty()) { // 3.1 & 3.2
             for (Partial p : data.getPartials()) {
                 if (notAlreadyAssigned(node, p.getActivity())) {
-                    System.out.println("Chosen because partial (3.1) (3.2)");
                     return p.getActivity();
                 }
             }
@@ -310,13 +271,11 @@ public class Main {
             for (NotCompatible nc : data.getNotCompatibles()) {
                 if (nc.aOneAssigned) {
                     if (notAlreadyAssigned(node, nc.getActivityTwo())) {
-                        System.out.println("Chosen because not compatible (3.5) (3.6)");
                         return nc.getActivityTwo();
                     }
                 }
                 if (nc.aTwoAssigned) {
                     if (notAlreadyAssigned(node, nc.getActivityOne())) {
-                        System.out.println("Chosen because not compatible (3.5) (3.6)");
                         return nc.getActivityOne();
                     }
                 }
@@ -326,7 +285,6 @@ public class Main {
         if (!data.getUnwanteds().isEmpty()) { // 3.7 & 3.8
             for (Unwanted u : data.getUnwanteds()) {
                 if (notAlreadyAssigned(node, u.getActivity())) {
-                    System.out.println("Chosen because unwanted (3.7) (3.8)");
                     return u.getActivity();
                 }
             }
@@ -348,10 +306,7 @@ public class Main {
 
         for (Activity ac : data.getActivities()) {
             if (notAlreadyAssigned(node, ac)) {
-                System.out.println("Chosen as smallest i (3.9) (3.10)");
                 return ac;
-            } else {
-                System.out.println("not chosen because already assigned");
             }
         }
 
@@ -362,7 +317,6 @@ public class Main {
         for (Slot s : expansion_node.getSlots()) {
             for (Activity a : s.getActivities()) {
                 if (a == placement_activity) {
-                    System.out.println("skipping because already placed activity in node");
                     return false;
                 }
             }
@@ -382,6 +336,7 @@ public class Main {
 
     private static void printResults() {
         ANode best = null;
+        int bestEval = Integer.MAX_VALUE;
 
         completedNodes.sort((a, b) -> -1 * Integer.compare(a.numberActivitiesAssigned(), b.numberActivitiesAssigned()));
 
@@ -391,10 +346,13 @@ public class Main {
                     if (n.isLeaf()) {
                         if (best == null) {
                             best = n;
+                            bestEval = eval(best);
                         } else {
-                            if (eval(n) < eval(best)) {
-                                if (n.numberActivitiesAssigned() >= best.numberActivitiesAssigned()) {
+                            int nEval = eval(n);
+                            if (nEval < bestEval) {
+                                if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
                                     best = n;
+                                    bestEval = nEval;
                                 }
                             }
                         }
@@ -402,16 +360,6 @@ public class Main {
                     }
                 }
             }
-            // if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
-            // if (best == null && n.getSol() == Sol.yes) {
-            // best = n;
-            // }
-            // if (n.isLeaf()) {
-            // if (best != null && eval(n) < eval(best)) {
-            // best = n;
-            // }
-            // }
-            // }=
         }
         if (best != null) {
             System.out.println(printOutput(best));
@@ -431,21 +379,14 @@ public class Main {
                 sorted.put(a.getFullIdentifier(), s.getDay().getShortCode() + ", " + s.getStartTime());
             }
         }
+        int maxKeyLength = sorted.keySet().stream().mapToInt(String::length).max().orElse(0);
 
-        sorted.forEach((key, value) -> out.append(key).append(" : ").append(value).append("\n"));
+        for (Map.Entry<String, String> entry : sorted.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            out.append(String.format("%-" + maxKeyLength + "s : %s%n", key, value));
+        }
 
         return out.toString();
-    }
-}
-
-class SortByAssigned implements Comparator<ANode> {
-    public int compare(ANode one, ANode two) {
-        if (one.numberActivitiesAssigned() < two.numberActivitiesAssigned()) {
-            return -1;
-        }
-        if (one.numberActivitiesAssigned() > two.numberActivitiesAssigned()) {
-            return 1;
-        }
-        return 0;
     }
 }

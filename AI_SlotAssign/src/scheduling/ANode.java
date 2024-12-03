@@ -120,7 +120,7 @@ public class ANode {
         for (Slot s : slots) {
             for (Activity a1 : s.getActivities()) {
                 for (Activity a2 : s.getActivities()) {
-                    if (a2.getDivision() == a1.getDivision()) {
+                    if (a2.getAgeGroup().equals(a1.getAgeGroup()) && a1 != a2) {
                         secdiff++;
                     }
                 }
@@ -130,7 +130,21 @@ public class ANode {
     }
 
     public String printSolo() {
-        return "Node: " + getChildren().size() + ", " + getSol();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < slots.size(); i++) {
+            sb.append("{");
+            for (int j = 0; j < slots.get(i).getActivities().size(); j++) {
+                sb.append(slots.get(i).getActivities().get(j));
+                if (j < slots.get(i).getActivities().size() - 1) {
+                    sb.append(", ");
+                }
+            }
+            sb.append("}");
+            if (i < slots.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        return sb.toString();
     }
 
     /**
