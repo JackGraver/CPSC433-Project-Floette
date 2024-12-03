@@ -123,7 +123,7 @@ public class Main {
      * @param slot   - slot of child activity is being added to
      * @param curr   - activity being added
      * @return if assignment was successful
-     * \
+     *         \
      */
     private static boolean assignActivityToSlot(ANode parent, ANode child, Slot slot, Activity curr) {
         if (noHardConstraintViolations(slot, curr, child)) {
@@ -210,10 +210,10 @@ public class Main {
             }
         }
 
-        if (curr.getAgeGroup().startsWith("U15")
+        if (curr instanceof Game && (curr.getAgeGroup().startsWith("U15")
                 || curr.getAgeGroup().startsWith("U16")
                 || curr.getAgeGroup().startsWith("U17")
-                || curr.getAgeGroup().startsWith("U19")) {
+                || curr.getAgeGroup().startsWith("U19"))) {
             for (Activity a : slot.getActivities()) {
                 if (a.getAgeGroup().startsWith("U15")
                         || curr.getAgeGroup().startsWith("U16")
@@ -374,16 +374,16 @@ public class Main {
                     }
                 }
             }
-//            if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
-//                if (best == null && n.getSol() == Sol.yes) {
-//                    best = n;
-//                }
-//                if (n.isLeaf()) {
-//                    if (best != null && eval(n) < eval(best)) {
-//                        best = n;
-//                    }
-//                }
-//            }=
+            // if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
+            // if (best == null && n.getSol() == Sol.yes) {
+            // best = n;
+            // }
+            // if (n.isLeaf()) {
+            // if (best != null && eval(n) < eval(best)) {
+            // best = n;
+            // }
+            // }
+            // }=
         }
         if (best != null) {
             System.out.println(printOutput(best));
