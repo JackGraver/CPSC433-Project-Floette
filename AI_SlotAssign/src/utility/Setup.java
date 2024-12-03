@@ -21,29 +21,19 @@ public class Setup {
     public static Data setup(String[] args) throws FileNotFoundException {
         if (args.length < 8) {
             System.out.println("Invalid command line arguments.");
-            // System.exit(0);
+            System.exit(0);
         }
 
-        int w_minfilled = 1;
-        int w_pref = 0;
-        int w_pair = 1;
-        int w_secdiff = 0;
-        int pen_gamemin = 10;
-        int pen_practicemin = 10;
-        int pen_notpaired = 10;
-        int pen_section = 10;
+        int w_minfilled = Integer.parseInt(args[1]);
+        int w_pref = Integer.parseInt(args[2]);
+        int w_pair = Integer.parseInt(args[3]);
+        int w_secdiff = Integer.parseInt(args[4]);
+        int pen_gamemin = Integer.parseInt(args[5]);
+        int pen_practicemin = Integer.parseInt(args[6]);
+        int pen_notpaired = Integer.parseInt(args[7]);
+        int pen_section = Integer.parseInt(args[8]);
 
-        // int w_minfilled = Integer.parseInt(args[1]);
-        // int w_pref = Integer.parseInt(args[2]);
-        // int w_pair = Integer.parseInt(args[3]);
-        // int w_secdiff = Integer.parseInt(args[4]);
-        // int pen_gamemin = Integer.parseInt(args[5]);
-        // int pen_practicemin = Integer.parseInt(args[6]);
-        // int pen_notpaired = Integer.parseInt(args[7]);
-        // int pen_section = Integer.parseInt(args[8]);
-
-        Scanner sc = new Scanner(new File("/Users/darpalpatel/Desktop/HCtest10-11.txt"));
-        // Scanner sc = new Scanner(new File(args[0]));
+        Scanner sc = new Scanner(new File(args[0]));
 
         sc.nextLine();
         String name = sc.nextLine();
