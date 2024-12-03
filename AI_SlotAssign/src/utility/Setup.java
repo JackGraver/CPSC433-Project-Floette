@@ -142,8 +142,8 @@ public class Setup {
             System.out.println("pair a1: " + a1 + ", a2: " + a2);
 
             if (a1 != null && a2 != null) {
-//                a1.setPair(new Pair(a2));
-//                a2.setPair(new Pair(a1));
+                a1.setPair(a2);
+                a2.setPair(a1);
                 data.addPair(new Pair(a1, a2));
             }
         }

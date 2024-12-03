@@ -106,7 +106,7 @@ public class ANode {
         for (Slot s : slots) {
             for (Activity a : s.getActivities()) {
                 if (a.getPair() != null) {
-                    if (!s.getActivities().contains(a.getPair().getPairedActivity())) {
+                    if (!s.getActivities().contains(a.getPair())) {
                         pair++;
                     }
                 }
