@@ -210,7 +210,6 @@ public class Main {
             }
         }
 
-        System.out.println("AGE GROUP: " + curr.getAgeGroup());
         if (curr.getAgeGroup().startsWith("U15")
                 || curr.getAgeGroup().startsWith("U16")
                 || curr.getAgeGroup().startsWith("U17")
