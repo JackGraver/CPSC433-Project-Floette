@@ -3,6 +3,8 @@ package scheduling;
 import assignments.Pair;
 import assignments.Preference;
 
+import java.util.ArrayList;
+
 /**
  * Abstract class for different possible activities (Game or Practice)
  */
@@ -11,10 +13,12 @@ public abstract class Activity {
     private String league;
     private String ageGroup;
     private int division;
-    private Preference preference;
-    private Activity pair;
+    private ArrayList<Preference> preferences;
+    private ArrayList<Activity> pairs;
 
     public Activity(String identifier) {
+        preferences = new ArrayList<>();
+        pairs = new ArrayList<>();
         this.fullIdentifier = identifier.replaceAll("\\s{2,}", " ").trim();
         parseIdentifierString(fullIdentifier);
     }
@@ -50,19 +54,19 @@ public abstract class Activity {
         return league + " " + ageGroup + " " + division;
     }
 
-    public Preference getPreference() {
-        return preference;
+    public ArrayList<Preference> getPreference() {
+        return preferences;
     }
 
     public void setPreference(Preference preference) {
-        this.preference = preference;
+        this.preferences.add(preference);
     }
 
-    public Activity getPair() {
-        return pair;
+    public ArrayList<Activity> getPairs() {
+        return pairs;
     }
 
     public void setPair(Activity pair) {
-        this.pair = pair;
+        this.pairs.add(pair);
     }
 }

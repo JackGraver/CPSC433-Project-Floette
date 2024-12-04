@@ -43,7 +43,7 @@ public class Setup {
         sc.nextLine();
         String line;
         // Game Slots
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.equals("")) {
             GameSlot game = (GameSlot) createActivity(line, true);
 
             // if (checkValidGameTime(time, date)) {
@@ -52,7 +52,7 @@ public class Setup {
         }
 
         // Practice Slots
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.equals("")) {
             PracticeSlot prac = (PracticeSlot) createActivity(line, false);
 
             // if (checkValidPracticeTime(time)) {
@@ -61,7 +61,7 @@ public class Setup {
         }
 
         // Games
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.equals("")) {
             Game game = new Game(line);
             data.addActivity(game);
             if (game.getDivision() == 9) {
@@ -70,7 +70,7 @@ public class Setup {
         }
 
         // Practices
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.equals("")) {
             Practice prac = new Practice(line);
             Game g;
             if ((g = findAssociatedGame(prac, data.getActivities())) != null) {
@@ -83,7 +83,7 @@ public class Setup {
         }
 
         // Not Compatible
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.equals("")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
@@ -96,7 +96,7 @@ public class Setup {
         }
 
         // Unwanted
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.equals("")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
 
             String[] split = line.split(",");
@@ -110,7 +110,7 @@ public class Setup {
         }
 
         // Preferences
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.equals("")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
@@ -128,7 +128,7 @@ public class Setup {
         }
 
         // Pairs
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.equals("")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
@@ -143,7 +143,7 @@ public class Setup {
         }
 
         // Partials
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.equals("")) {
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
