@@ -21,6 +21,7 @@ public class Main {
     public static Data data;
     private static ArrayList<ANode> nodeQueue;
     private static ArrayList<ANode> completedNodes;
+    private static boolean stopEarly = true;
 
     public static void main(String[] args) throws Exception {
         try {
@@ -36,10 +37,12 @@ public class Main {
         ANode root = new ANode(data.getSlots()); // initialize root node
         nodeQueue.add(root); // add to queue (to be expanded first)
 
-        // is a for loop for testing
-        while (!nodeQueue.isEmpty()) { // while there are nodes to expand (not sol = yes)
+        for(int i = 0; i < 500; i++) {
+//        while (!nodeQueue.isEmpty()) { // while there are nodes to expand (not sol = yes)
             ANode expansion_node = f_leaf(); // get next node to expand (f_leaf)
             Activity placement_activity = f_trans(expansion_node); // get next activity to place in expanded node (f_trans)
+
+//            System.out.println("Expanding " + expansion_node.printSolo() + " with " + placement_activity);
 
             if (div(expansion_node, placement_activity) == 0) { // handle expansion
                 expansion_node.setSol(Sol.yes);
@@ -52,6 +55,7 @@ public class Main {
             nodeQueue.remove(expansion_node);
             completedNodes.add(expansion_node);
         }
+        System.out.println(root);
         printResults();
     }
 
@@ -63,27 +67,30 @@ public class Main {
      */
     private static int div(ANode node, Activity curr) {
         int branches = 0;
-        ArrayList<Integer> assigned = new ArrayList<>(); // make sure we don't choose the same slot for each expansion
+        ArrayList<Integer> checkedSlots = new ArrayList<>(); // make sure we don't choose the same slot for each expansion
         // leaf (could use better solution)
 
         // loop through number of slots (n) to potentially create n children nodes
         for (int i = 0; i < node.getSlots().size(); i++) {
             ANode child = new ANode(node.getSlots());
             for (Slot slot : child.getSlots()) {
-                if (!assigned.contains(child.getSlots().indexOf(slot))) {
-                    // check if it's the correct type of slot (Game Slot for Games, Prac slot for
-                    // Practices)
+                if (!checkedSlots.contains(child.getSlots().indexOf(slot))) {
+                    // check if it's the correct type of slot (Game Slot for Games, Prac slot for Practices)
                     if (slot.getType() == SlotType.Game && curr instanceof Game) { // Game
                         if (assignActivityToSlot(node, child, slot, curr)) {
-                            assigned.add(child.getSlots().indexOf(slot));
+                            checkedSlots.add(child.getSlots().indexOf(slot));
                             branches++;
                             break;
+                        } else {
+                            checkedSlots.add(child.getSlots().indexOf(slot));
                         }
                     } else if (slot.getType() == SlotType.Practice && curr instanceof Practice) { // Prac
                         if (assignActivityToSlot(node, child, slot, curr)) {
-                            assigned.add(child.getSlots().indexOf(slot));
+                            checkedSlots.add(child.getSlots().indexOf(slot));
                             branches++;
                             break;
+                        } else {
+                            checkedSlots.add(child.getSlots().indexOf(slot));
                         }
                     }
                 }
@@ -104,7 +111,6 @@ public class Main {
      * @param slot   - slot of child activity is being added to
      * @param curr   - activity being added
      * @return if assignment was successful
-     * \
      */
     private static boolean assignActivityToSlot(ANode parent, ANode child, Slot slot, Activity curr) {
         if (noHardConstraintViolations(slot, curr, child)) {
@@ -133,7 +139,7 @@ public class Main {
                 }
             }
             parent.addChild(child);
-            nodeQueue.add(child);
+            nodeQueue.add(0, child);
             return true;
         }
         return false;
@@ -173,7 +179,7 @@ public class Main {
             }
         }
 
-        if (curr.getDivision() == 9) {
+        if (String.valueOf(curr.getDivision()).startsWith("9")) {
             if (!slot.isEveningSlot()) {
                 return false;
             }
@@ -340,27 +346,44 @@ public class Main {
 
         completedNodes.sort((a, b) -> -1 * Integer.compare(a.numberActivitiesAssigned(), b.numberActivitiesAssigned()));
 
-        for (ANode n : completedNodes) {
-            if (n.getSol() == Sol.yes) {
-                if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
-                    if (n.isLeaf()) {
-                        if (best == null) {
+        if (stopEarly) {
+            System.out.println("stop early option: " + completedNodes.size());
+            for (ANode n : completedNodes) {
+                    if (best == null) {
+                        best = n;
+                        bestEval = eval(best);
+                    } else {
+                        int nEval = eval(n);
+                        if (nEval < bestEval) {
                             best = n;
-                            bestEval = eval(best);
-                        } else {
-                            int nEval = eval(n);
-                            if (nEval < bestEval) {
-                                if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
-                                    best = n;
-                                    bestEval = nEval;
+                            bestEval = nEval;
+                        }
+                    }
+
+            }
+        } else {
+            for (ANode n : completedNodes) {
+                if (n.getSol() == Sol.yes) {
+                    if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
+                        if (n.isLeaf()) {
+                            if (best == null) {
+                                best = n;
+                                bestEval = eval(best);
+                            } else {
+                                int nEval = eval(n);
+                                if (nEval < bestEval) {
+                                    if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
+                                        best = n;
+                                        bestEval = nEval;
+                                    }
                                 }
                             }
                         }
-
                     }
                 }
             }
         }
+
         if (best != null) {
             System.out.println(printOutput(best));
         } else {

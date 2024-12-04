@@ -1,5 +1,6 @@
 package scheduling;
 
+import assignments.Preference;
 import enums.Sol;
 
 import java.util.ArrayList;
@@ -91,28 +92,38 @@ public class ANode {
         int pref = 0;
         for (Slot s : slots) {
             for (Activity a : s.getActivities()) {
-                if (a.getPreference() != null) {
-                    if (a.getPreference().getSlot() != s) {
-                        pref++;
+                if (!a.getPreference().isEmpty()) {
+                    for(Preference p : a.getPreference()) {
+                        if(p.getSlot().getDay() != s.getDay() || p.getSlot().getStartTime() != s.getStartTime()) {
+                            pref += p.getPreferenceValue();
+                        }
                     }
                 }
             }
         }
-        return pref * penalty;
+        return pref;
+//        return pref * penalty;
     }
 
     public int eval_pair(int penalty) {
         int pair = 0;
         for (Slot s : slots) {
             for (Activity a : s.getActivities()) {
-                if (a.getPair() != null) {
-                    if (!s.getActivities().contains(a.getPair())) {
-                        pair++;
+                if(!a.getPairs().isEmpty()) {
+                    for(Activity pa : a.getPairs()) {
+                        if (!s.getActivities().contains(pa)) {
+                            pair++;
+                        }
                     }
                 }
+//                if (a.getPair() != null) {
+//                    if (!s.getActivities().contains(a.getPair())) {
+//                        pair++;
+//                    }
+//                }
             }
         }
-        return pair * penalty;
+        return (pair * penalty) / 2;
     }
 
     public int eval_secdiff(int penalty) {
@@ -126,7 +137,7 @@ public class ANode {
                 }
             }
         }
-        return secdiff * penalty;
+        return (secdiff * penalty) / 2;
     }
 
     public String printSolo() {
