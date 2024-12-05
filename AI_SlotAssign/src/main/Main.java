@@ -37,12 +37,15 @@ public class Main {
         ANode root = new ANode(data.getSlots()); // initialize root node
         nodeQueue.add(root); // add to queue (to be expanded first)
 
-        for(int i = 0; i < 500; i++) {
-//        while (!nodeQueue.isEmpty()) { // while there are nodes to expand (not sol = yes)
+        for (int i = 0; i < 500; i++) {
+            // while (!nodeQueue.isEmpty()) { // while there are nodes to expand (not sol =
+            // yes)
             ANode expansion_node = f_leaf(); // get next node to expand (f_leaf)
-            Activity placement_activity = f_trans(expansion_node); // get next activity to place in expanded node (f_trans)
+            Activity placement_activity = f_trans(expansion_node); // get next activity to place in expanded node
+                                                                   // (f_trans)
 
-//            System.out.println("Expanding " + expansion_node.printSolo() + " with " + placement_activity);
+            // System.out.println("Expanding " + expansion_node.printSolo() + " with " +
+            // placement_activity);
 
             if (div(expansion_node, placement_activity) == 0) { // handle expansion
                 expansion_node.setSol(Sol.yes);
@@ -67,7 +70,8 @@ public class Main {
      */
     private static int div(ANode node, Activity curr) {
         int branches = 0;
-        ArrayList<Integer> checkedSlots = new ArrayList<>(); // make sure we don't choose the same slot for each expansion
+        ArrayList<Integer> checkedSlots = new ArrayList<>(); // make sure we don't choose the same slot for each
+                                                             // expansion
         // leaf (could use better solution)
 
         // loop through number of slots (n) to potentially create n children nodes
@@ -75,7 +79,8 @@ public class Main {
             ANode child = new ANode(node.getSlots());
             for (Slot slot : child.getSlots()) {
                 if (!checkedSlots.contains(child.getSlots().indexOf(slot))) {
-                    // check if it's the correct type of slot (Game Slot for Games, Prac slot for Practices)
+                    // check if it's the correct type of slot (Game Slot for Games, Prac slot for
+                    // Practices)
                     if (slot.getType() == SlotType.Game && curr instanceof Game) { // Game
                         if (assignActivityToSlot(node, child, slot, curr)) {
                             checkedSlots.add(child.getSlots().indexOf(slot));
@@ -180,6 +185,7 @@ public class Main {
         }
 
         if (String.valueOf(curr.getDivision()).startsWith("9")) {
+        if (String.valueOf(curr.getDivision()).startsWith("9")) {
             if (!slot.isEveningSlot()) {
                 return false;
             }
@@ -196,6 +202,17 @@ public class Main {
                         || curr.getAgeGroup().startsWith("U19")) {
                     return false;
                 }
+            }
+        }
+
+        for (Activity a : data.getActivities()) {
+            // System.out.println("IDDDD: " + a.getFullIdentifier());
+            if (a.getFullIdentifier().startsWith("S-")) {
+                if ((slot.getStartTime() != LocalTime.of(18, 0))
+                        && ((slot.getDay().toString() != "TU") || slot.getDay().toString() != "TH")) {
+                    return false;
+                }
+
             }
         }
 
@@ -334,6 +351,12 @@ public class Main {
         if (node == null) {
             return Integer.MAX_VALUE;
         }
+        System.out.println("weight: " + node.printSolo()
+                + node.eval_minfilled(data.getPen_gamemin(), data.getPen_practicemin()) * data.getW_minfilled());
+        System.out.println(node.eval_pref(1) * data.getW_pref());
+        System.out.println(node.eval_pair(data.getPen_notpaired()) * data.getW_pair());
+        System.out.println(node.eval_secdiff(data.getPen_section()) * data.getW_secdiff());
+
         return (node.eval_minfilled(data.getPen_gamemin(), data.getPen_practicemin()) * data.getW_minfilled())
                 + (node.eval_pref(1) * data.getW_pref())
                 + (node.eval_pair(data.getPen_notpaired()) * data.getW_pair())
@@ -349,16 +372,16 @@ public class Main {
         if (stopEarly) {
             System.out.println("stop early option: " + completedNodes.size());
             for (ANode n : completedNodes) {
-                    if (best == null) {
+                if (best == null) {
+                    best = n;
+                    bestEval = eval(best);
+                } else {
+                    int nEval = eval(n);
+                    if (nEval < bestEval) {
                         best = n;
-                        bestEval = eval(best);
-                    } else {
-                        int nEval = eval(n);
-                        if (nEval < bestEval) {
-                            best = n;
-                            bestEval = nEval;
-                        }
+                        bestEval = nEval;
                     }
+                }
 
             }
         } else {

@@ -63,6 +63,10 @@ public class Setup {
         // Games
         while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.equals("")) {
             Game game = new Game(line);
+            if (game.getAgeGroup().equals("U13T1") || game.getAgeGroup().equals("U12T1")) {
+                data.addActivity(new Practice("S-" + line));
+            }
+
             data.addActivity(game);
             if (game.getDivision() == 9) {
                 data.getEveningActivities().add(new Evening(game));

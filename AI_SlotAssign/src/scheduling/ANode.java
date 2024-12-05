@@ -15,7 +15,8 @@ public class ANode {
     private Sol sol;
     /**
      * Node data containing n slots of all activity assignments
-     * <br>where n is number of slots given from input
+     * <br>
+     * where n is number of slots given from input
      */
     private final ArrayList<Slot> slots;
     /**
@@ -24,7 +25,8 @@ public class ANode {
     private final ArrayList<ANode> children;
 
     /**
-     * Constructor, does a deep copy of given slots in order to avoid java Object pass-by-reference issues
+     * Constructor, does a deep copy of given slots in order to avoid java Object
+     * pass-by-reference issues
      *
      * @param slots - slots to be deep copied to create own Node data
      */
@@ -70,20 +72,32 @@ public class ANode {
     }
 
     /**
-     * Eval function to check how for each slot the number of activities assigned compared to minimum needed for slot
+     * Eval function to check how for each slot the number of activities assigned
+     * compared to minimum needed for slot
      *
      * @return (Slot minimum - activities assigned) for all slots combined
      */
     public int eval_minfilled(int gamePenalty, int pracPenalty) {
         int min = 0;
         for (Slot s : slots) {
-            if (!(s.getMin() == 0)) {
-                if (s.isGame()) {
-                    min = (s.getMin() - s.getActivities().size()) * gamePenalty;
-                } else {
-                    min = (s.getMin() - s.getActivities().size()) * pracPenalty;
+            // System.out.println("This min: " + s.getMin());
+            // if (!(s.getMin() == 0)) {
+            if (s.isGame()) {
+                // System.out.print("This min: " + s.getMin());
+                if ((s.getMin() - s.getActivities().size()) > min) {
+                    min = (s.getMin() - s.getActivities().size());
                 }
+
+                // System.out.print("This min: " + s.getMin());
+            } else {
+                // System.out.print("This min: " + s.getMin());
+                if ((s.getMin() - s.getActivities().size()) > min) {
+                    min = (s.getMin() - s.getActivities().size());
+                }
+                // System.out.print("This min: " + s.getMin());
             }
+
+            // }
         }
         return min;
     }
@@ -160,7 +174,9 @@ public class ANode {
 
     /**
      * Override toString function
-     * <br> Only returns what printTreeHelper returns in-order to make a visually understandable tree representation in console printing
+     * <br>
+     * Only returns what printTreeHelper returns in-order to make a visually
+     * understandable tree representation in console printing
      *
      * @return String representation of tree starting from this node
      */
@@ -170,9 +186,11 @@ public class ANode {
     }
 
     /**
-     * Helper print function, called recursively in order to print all children with correct number of tabs depending on depth
+     * Helper print function, called recursively in order to print all children with
+     * correct number of tabs depending on depth
      *
-     * @param depth - current depth of node being printed (for depth number of tab chars)
+     * @param depth - current depth of node being printed (for depth number of tab
+     *              chars)
      * @return string representation of tree starting from this node
      */
     private String printTreeHelper(int depth) {
