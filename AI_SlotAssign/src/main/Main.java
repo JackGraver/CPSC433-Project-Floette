@@ -21,7 +21,6 @@ public class Main {
     public static Data data;
     private static ArrayList<ANode> nodeQueue;
     private static ArrayList<ANode> completedNodes;
-    private static boolean stopEarly = true;
 
     public static void main(String[] args) throws Exception {
         try {
@@ -37,15 +36,14 @@ public class Main {
         ANode root = new ANode(data.getSlots()); // initialize root node
         nodeQueue.add(root); // add to queue (to be expanded first)
 
-        for (int i = 0; i < 500; i++) {
-            // while (!nodeQueue.isEmpty()) { // while there are nodes to expand (not sol =
+        for (int i = 0; i < 1; i++) {
+//        while (!nodeQueue.isEmpty()) { // while there are nodes to expand (not sol =
             // yes)
             ANode expansion_node = f_leaf(); // get next node to expand (f_leaf)
             Activity placement_activity = f_trans(expansion_node); // get next activity to place in expanded node
-                                                                   // (f_trans)
+            // (f_trans)
 
-            // System.out.println("Expanding " + expansion_node.printSolo() + " with " +
-            // placement_activity);
+            System.out.println("Expanding " + expansion_node.printSolo() + " with " + placement_activity);
 
             if (div(expansion_node, placement_activity) == 0) { // handle expansion
                 expansion_node.setSol(Sol.yes);
@@ -58,7 +56,7 @@ public class Main {
             nodeQueue.remove(expansion_node);
             completedNodes.add(expansion_node);
         }
-        System.out.println(root);
+//        System.out.println(root);
         printResults();
     }
 
@@ -71,31 +69,30 @@ public class Main {
     private static int div(ANode node, Activity curr) {
         int branches = 0;
         ArrayList<Integer> checkedSlots = new ArrayList<>(); // make sure we don't choose the same slot for each
-                                                             // expansion
+        // expansion
         // leaf (could use better solution)
 
         // loop through number of slots (n) to potentially create n children nodes
         for (int i = 0; i < node.getSlots().size(); i++) {
             ANode child = new ANode(node.getSlots());
             for (Slot slot : child.getSlots()) {
-                if (!checkedSlots.contains(child.getSlots().indexOf(slot))) {
+                if(!slot.isChecked()) {
+//                if (!checkedSlots.contains(child.getSlots().indexOf(slot))) {
                     // check if it's the correct type of slot (Game Slot for Games, Prac slot for
                     // Practices)
                     if (slot.getType() == SlotType.Game && curr instanceof Game) { // Game
+//                        checkedSlots.add(child.getSlots().indexOf(slot));
+                        slot.setChecked();
                         if (assignActivityToSlot(node, child, slot, curr)) {
-                            checkedSlots.add(child.getSlots().indexOf(slot));
                             branches++;
                             break;
-                        } else {
-                            checkedSlots.add(child.getSlots().indexOf(slot));
                         }
                     } else if (slot.getType() == SlotType.Practice && curr instanceof Practice) { // Prac
+//                        checkedSlots.add(child.getSlots().indexOf(slot));
+                        slot.setChecked();
                         if (assignActivityToSlot(node, child, slot, curr)) {
-                            checkedSlots.add(child.getSlots().indexOf(slot));
                             branches++;
                             break;
-                        } else {
-                            checkedSlots.add(child.getSlots().indexOf(slot));
                         }
                     }
                 }
@@ -144,6 +141,8 @@ public class Main {
                 }
             }
             parent.addChild(child);
+            child.updateEval(data.getPen_gamemin(), data.getPen_practicemin(), data.getW_minfilled(),
+                    data.getW_pref(), data.getPen_notpaired(), data.getW_pair(), data.getPen_section(), data.getW_secdiff());
             nodeQueue.add(0, child);
             return true;
         }
@@ -185,7 +184,6 @@ public class Main {
         }
 
         if (String.valueOf(curr.getDivision()).startsWith("9")) {
-        if (String.valueOf(curr.getDivision()).startsWith("9")) {
             if (!slot.isEveningSlot()) {
                 return false;
             }
@@ -205,15 +203,14 @@ public class Main {
             }
         }
 
-        for (Activity a : data.getActivities()) {
-            // System.out.println("IDDDD: " + a.getFullIdentifier());
-            if (a.getFullIdentifier().startsWith("S-")) {
-                if ((slot.getStartTime() != LocalTime.of(18, 0))
-                        && ((slot.getDay().toString() != "TU") || slot.getDay().toString() != "TH")) {
-                    return false;
+//        for (Activity a : data.getActivities()) {
+            if (curr.getFullIdentifier().startsWith("S-")) {
+                if ((slot.getStartTime() != LocalTime.of(18, 0))) {
+                    if (slot.getDay() != Days.TU || slot.getDay() != Days.TR) {
+                        return false;
+                    }
                 }
-
-            }
+//            }
         }
 
         for (Slot s : node.getSlots()) {
@@ -259,14 +256,18 @@ public class Main {
      */
     private static ANode f_leaf() {
         ANode choose = null;
+        int chooseEval = Integer.MAX_VALUE;
         for (ANode n : nodeQueue) {
             if (n.isLeaf()) { // is leaf node
                 if (choose != null) { // not only leaf node
-                    if (eval(n) < eval(choose)) {
+                    int tempEval = n.getEval();
+                    if (tempEval < chooseEval) {
                         choose = n;
+                        chooseEval = tempEval;
                     }
                 } else {
                     choose = n;
+                    chooseEval = n.getEval();
                 }
             }
         }
@@ -347,58 +348,25 @@ public class Main {
         return true;
     }
 
-    private static int eval(ANode node) {
-        if (node == null) {
-            return Integer.MAX_VALUE;
-        }
-        System.out.println("weight: " + node.printSolo()
-                + node.eval_minfilled(data.getPen_gamemin(), data.getPen_practicemin()) * data.getW_minfilled());
-        System.out.println(node.eval_pref(1) * data.getW_pref());
-        System.out.println(node.eval_pair(data.getPen_notpaired()) * data.getW_pair());
-        System.out.println(node.eval_secdiff(data.getPen_section()) * data.getW_secdiff());
-
-        return (node.eval_minfilled(data.getPen_gamemin(), data.getPen_practicemin()) * data.getW_minfilled())
-                + (node.eval_pref(1) * data.getW_pref())
-                + (node.eval_pair(data.getPen_notpaired()) * data.getW_pair())
-                + (node.eval_secdiff(data.getPen_section()) * data.getW_secdiff());
-    }
-
     private static void printResults() {
         ANode best = null;
         int bestEval = Integer.MAX_VALUE;
 
         completedNodes.sort((a, b) -> -1 * Integer.compare(a.numberActivitiesAssigned(), b.numberActivitiesAssigned()));
 
-        if (stopEarly) {
-            System.out.println("stop early option: " + completedNodes.size());
-            for (ANode n : completedNodes) {
-                if (best == null) {
-                    best = n;
-                    bestEval = eval(best);
-                } else {
-                    int nEval = eval(n);
-                    if (nEval < bestEval) {
-                        best = n;
-                        bestEval = nEval;
-                    }
-                }
-
-            }
-        } else {
-            for (ANode n : completedNodes) {
-                if (n.getSol() == Sol.yes) {
-                    if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
-                        if (n.isLeaf()) {
-                            if (best == null) {
-                                best = n;
-                                bestEval = eval(best);
-                            } else {
-                                int nEval = eval(n);
-                                if (nEval < bestEval) {
-                                    if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
-                                        best = n;
-                                        bestEval = nEval;
-                                    }
+        for (ANode n : completedNodes) {
+            if (n.getSol() == Sol.yes) {
+                if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
+                    if (n.isLeaf()) {
+                        if (best == null) {
+                            best = n;
+                            bestEval = best.getEval();
+                        } else {
+                            int nEval = n.getEval();
+                            if (nEval < bestEval) {
+                                if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
+                                    best = n;
+                                    bestEval = nEval;
                                 }
                             }
                         }
@@ -416,7 +384,7 @@ public class Main {
 
     private static String printOutput(ANode node) {
         StringBuilder out = new StringBuilder();
-        out.append("Eval-value: ").append(eval(node)).append("\n");
+        out.append("Eval-value: ").append(node.getEval()).append("\n");
 
         TreeMap<String, String> sorted = new TreeMap<>();
 

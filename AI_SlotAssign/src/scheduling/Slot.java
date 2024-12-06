@@ -55,6 +55,7 @@ public class Slot {
      */
     private boolean eveningSlot;
 
+    private boolean checked;
     /**
      * Slot Constructor
      * <br>
@@ -75,6 +76,7 @@ public class Slot {
         this.min = min;
         activities = new ArrayList<>();
         eveningSlot = startTime.isAfter(LocalTime.of(18, 0));
+        this.checked = false;
     }
 
     /**
@@ -173,6 +175,13 @@ public class Slot {
         return startTime.isAfter(LocalTime.of(17, 59));
     }
 
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked() {
+        checked = true;
+    }
     public String toString() {
         return "[" + id + "] (" + type + ") " + day + " @" + startTime + "-" + endTime + " | Max Filled: " + max
                 + ", Min Filed: " + min;

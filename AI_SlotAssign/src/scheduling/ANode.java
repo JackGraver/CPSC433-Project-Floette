@@ -4,6 +4,8 @@ import assignments.Preference;
 import enums.Sol;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * And Tree Node recursive data structure
@@ -13,6 +15,10 @@ public class ANode {
      * Current sol value of node
      */
     private Sol sol;
+
+    private int eval;
+
+    private boolean isLeaf;
     /**
      * Node data containing n slots of all activity assignments
      * <br>
@@ -32,6 +38,8 @@ public class ANode {
      */
     public ANode(ArrayList<Slot> slots) {
         sol = Sol.none;
+        this.eval = 0;
+        isLeaf = true;
         this.slots = new ArrayList<>();
         for (Slot s : slots) {
             this.slots.add(new Slot(s));
@@ -57,10 +65,15 @@ public class ANode {
 
     public void addChild(ANode child) {
         children.add(child);
+        isLeaf = false;
     }
 
     public boolean isLeaf() {
-        return children.isEmpty();
+        return isLeaf;
+    }
+
+    public void setNotLeaf() {
+        isLeaf = false;
     }
 
     public int numberActivitiesAssigned() {
@@ -69,6 +82,18 @@ public class ANode {
             n += s.getActivities().size();
         }
         return n;
+    }
+
+
+    public int getEval() {
+        return this.eval;
+    }
+
+    public void updateEval(int pen_gamemin, int pen_practicemin, int w_minfilled, int w_pref, int pen_notpaired, int w_pair, int pen_section, int w_secdiff) {
+        this.eval = (eval_minfilled(pen_gamemin, pen_practicemin) * w_minfilled)
+                + (eval_pref(1) * w_pref)
+                + (eval_pair(pen_notpaired) * w_pair)
+                + (eval_secdiff(pen_section) * w_secdiff);
     }
 
     /**
@@ -142,15 +167,28 @@ public class ANode {
 
     public int eval_secdiff(int penalty) {
         int secdiff = 0;
-        for (Slot s : slots) {
-            for (Activity a1 : s.getActivities()) {
-                for (Activity a2 : s.getActivities()) {
-                    if (a2.getAgeGroup().equals(a1.getAgeGroup()) && a1 != a2) {
-                        secdiff++;
-                    }
+
+        for(Slot s : slots) {
+            Set<String> ageGroups = new HashSet<>();
+            for(Activity activity : s.getActivities()) {
+                if(!ageGroups.add(activity.getAgeGroup())) {
+                    secdiff++;
+                    break;
                 }
             }
+
         }
+
+//        int secdiff = 0;
+//        for (Slot s : slots) {
+//            for (Activity a1 : s.getActivities()) {
+//                for (Activity a2 : s.getActivities()) {
+//                    if (a2.getAgeGroup().equals(a1.getAgeGroup()) && a1 != a2) {
+//                        secdiff++;
+//                    }
+//                }
+//            }
+//        }
         return (secdiff * penalty) / 2;
     }
 
