@@ -16,7 +16,7 @@ We present a scheduling algorithm that is based on an AND-Tree search model, whi
 1. Download the 433Proj folder
 2. Open an IDE like VSCode or IntelliJ (if needed: install Java on your machine)
 3. Navigate to src folder (433Proj/AI_SlotAssign/src)
-4. Compile .java files in project:
-   javac $(find . -name "*.java")
+4. Compile .java files in project, for Linux/Mac:
+   javac $(find . -name "*.java") 
 5. Run the program for large inputs:
    java main/Main _path_to_input.txt_ 1 1 1 1 1 1 1 1
