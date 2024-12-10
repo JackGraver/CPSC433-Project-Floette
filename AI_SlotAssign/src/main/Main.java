@@ -13,6 +13,7 @@ import utility.Data;
 import utility.Setup;
 
 import java.io.FileNotFoundException;
+import java.sql.SQLOutput;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -20,43 +21,46 @@ public class Main {
 
     public static Data data;
     private static ArrayList<ANode> nodeQueue;
-    private static ArrayList<ANode> completedNodes;
+    private static ANode currentBest = null;
+    private static int currentBestEval = Integer.MAX_VALUE;
 
     public static void main(String[] args) throws Exception {
         try {
             data = Setup.setup(args); // load data from given file
+            System.out.println(data.getActivities().size());
         } catch (FileNotFoundException e) {
             System.out.println("Invalid file! Exiting Program.");
             System.exit(0);
         }
 
         nodeQueue = new ArrayList<>(); // create queue for going through expansion of leaves
-        completedNodes = new ArrayList<>();
 
         ANode root = new ANode(data.getSlots()); // initialize root node
         nodeQueue.add(root); // add to queue (to be expanded first)
 
-        for (int i = 0; i < 1; i++) {
-//        while (!nodeQueue.isEmpty()) { // while there are nodes to expand (not sol =
-            // yes)
-            ANode expansion_node = f_leaf(); // get next node to expand (f_leaf)
-            Activity placement_activity = f_trans(expansion_node); // get next activity to place in expanded node
-            // (f_trans)
-
-            System.out.println("Expanding " + expansion_node.printSolo() + " with " + placement_activity);
-
-            if (div(expansion_node, placement_activity) == 0) { // handle expansion
-                expansion_node.setSol(Sol.yes);
+        while (!nodeQueue.isEmpty()) { // while there are nodes to expand (not sol =
+            if (System.in.available() > 0) {
+                System.out.println("Found break key, exiting main loop");
+                break;
             }
-            if (placement_activity == null) {
+
+            ANode expansion_node = f_leaf(); // get next node to expand (f_leaf)
+            Activity placement_activity = f_trans(expansion_node); // get next activity to place in expanded node (f_trans)
+
+            if (div(expansion_node, placement_activity) == 0 || placement_activity == null) {
                 expansion_node.setSol(Sol.yes);
+                if (currentBest == null) {
+                    currentBest = expansion_node;
+                    currentBestEval = expansion_node.getEval();
+                } else if (expansion_node.numberActivitiesAssigned() >= currentBest.numberActivitiesAssigned() && expansion_node.getEval() < currentBestEval) {
+                    currentBest = expansion_node;
+                    currentBestEval = expansion_node.getEval();
+                }
             }
 
             data.removeAllActivity(placement_activity);
             nodeQueue.remove(expansion_node);
-            completedNodes.add(expansion_node);
         }
-//        System.out.println(root);
         printResults();
     }
 
@@ -68,28 +72,23 @@ public class Main {
      */
     private static int div(ANode node, Activity curr) {
         int branches = 0;
-        ArrayList<Integer> checkedSlots = new ArrayList<>(); // make sure we don't choose the same slot for each
-        // expansion
-        // leaf (could use better solution)
+        ArrayList<Integer> checkedSlots = new ArrayList<>(); // make sure we don't choose the same slot for each expansion leaf (could use better solution)
 
         // loop through number of slots (n) to potentially create n children nodes
         for (int i = 0; i < node.getSlots().size(); i++) {
             ANode child = new ANode(node.getSlots());
             for (Slot slot : child.getSlots()) {
-                if(!slot.isChecked()) {
-//                if (!checkedSlots.contains(child.getSlots().indexOf(slot))) {
+                if (!checkedSlots.contains(child.getSlots().indexOf(slot))) {
                     // check if it's the correct type of slot (Game Slot for Games, Prac slot for
                     // Practices)
                     if (slot.getType() == SlotType.Game && curr instanceof Game) { // Game
-//                        checkedSlots.add(child.getSlots().indexOf(slot));
-                        slot.setChecked();
+                        checkedSlots.add(child.getSlots().indexOf(slot));
                         if (assignActivityToSlot(node, child, slot, curr)) {
                             branches++;
                             break;
                         }
                     } else if (slot.getType() == SlotType.Practice && curr instanceof Practice) { // Prac
-//                        checkedSlots.add(child.getSlots().indexOf(slot));
-                        slot.setChecked();
+                        checkedSlots.add(child.getSlots().indexOf(slot));
                         if (assignActivityToSlot(node, child, slot, curr)) {
                             branches++;
                             break;
@@ -203,14 +202,12 @@ public class Main {
             }
         }
 
-//        for (Activity a : data.getActivities()) {
-            if (curr.getFullIdentifier().startsWith("S-")) {
-                if ((slot.getStartTime() != LocalTime.of(18, 0))) {
-                    if (slot.getDay() != Days.TU || slot.getDay() != Days.TR) {
-                        return false;
-                    }
+        if (curr.getFullIdentifier().startsWith("S-")) {
+            if ((slot.getStartTime() != LocalTime.of(18, 0))) {
+                if (slot.getDay() != Days.TU || slot.getDay() != Days.TR) {
+                    return false;
                 }
-//            }
+            }
         }
 
         for (Slot s : node.getSlots()) {
@@ -258,7 +255,11 @@ public class Main {
         ANode choose = null;
         int chooseEval = Integer.MAX_VALUE;
         for (ANode n : nodeQueue) {
-            if (n.isLeaf()) { // is leaf node
+            if (n.isLeaf()) {
+                choose = n;
+                break;
+            } else {
+                // is leaf node
                 if (choose != null) { // not only leaf node
                     int tempEval = n.getEval();
                     if (tempEval < chooseEval) {
@@ -349,34 +350,11 @@ public class Main {
     }
 
     private static void printResults() {
-        ANode best = null;
-        int bestEval = Integer.MAX_VALUE;
-
-        completedNodes.sort((a, b) -> -1 * Integer.compare(a.numberActivitiesAssigned(), b.numberActivitiesAssigned()));
-
-        for (ANode n : completedNodes) {
-            if (n.getSol() == Sol.yes) {
-                if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
-                    if (n.isLeaf()) {
-                        if (best == null) {
-                            best = n;
-                            bestEval = best.getEval();
-                        } else {
-                            int nEval = n.getEval();
-                            if (nEval < bestEval) {
-                                if (n.numberActivitiesAssigned() >= data.getActivities().size()) {
-                                    best = n;
-                                    bestEval = nEval;
-                                }
-                            }
-                        }
-                    }
-                }
+        if (currentBest != null) {
+            System.out.println(printOutput(currentBest));
+            if (currentBest.numberActivitiesAssigned() < data.getActivities().size()) {
+                System.out.println("Not all activities assigned.");
             }
-        }
-
-        if (best != null) {
-            System.out.println(printOutput(best));
         } else {
             System.out.println("No solution found.");
         }
