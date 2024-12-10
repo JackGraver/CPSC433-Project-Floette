@@ -43,25 +43,53 @@ public class Setup {
         sc.nextLine();
         String line;
         // Game Slots
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            GameSlot game = (GameSlot) createActivity(line, true);
+        while (sc.hasNextLine()) {
+            line = sc.nextLine().trim();
 
-            // if (checkValidGameTime(time, date)) {
+            if (line.equalsIgnoreCase("Game slots:")) {
+                continue;
+            }
+            if (line.equalsIgnoreCase("Practice slots:")) {
+                break;
+            }
+            if (line.isEmpty()) {
+                continue;
+            }
+            GameSlot game = (GameSlot) createActivity(line, true);
             data.addSlot(game);
-            // }
         }
 
         // Practice Slots
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
-            PracticeSlot prac = (PracticeSlot) createActivity(line, false);
+        while (sc.hasNextLine()) {
+            line = sc.nextLine().trim();
 
-            // if (checkValidPracticeTime(time)) {
+            if (line.equalsIgnoreCase("Practice slots:")) {
+                continue;
+            }
+            if (line.equalsIgnoreCase("Games:")) {
+                break;
+            }
+            if (line.isEmpty()) {
+                continue;
+            }
+            PracticeSlot prac = (PracticeSlot) createActivity(line, false);
             data.addSlot(prac);
-            // }
         }
 
         // Games
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine()) {
+            line = sc.nextLine().trim();
+
+            if (line.equalsIgnoreCase("Games:")) {
+                continue;
+            }
+            if (line.equalsIgnoreCase("Practices:")) {
+                break;
+            }
+            if (line.isEmpty()) {
+                continue;
+            }
+
             Game game = new Game(line);
             if (game.getAgeGroup().equals("U13T1") || game.getAgeGroup().equals("U12T1")) {
                 data.addActivity(new Practice("S-" + line));
@@ -74,7 +102,19 @@ public class Setup {
         }
 
         // Practices
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine()) {
+            line = sc.nextLine().trim();
+
+            if (line.equalsIgnoreCase("Practices:")) {
+                continue;
+            }
+            if (line.equalsIgnoreCase("Not compatible:")) {
+                break;
+            }
+            if (line.isEmpty()) {
+                continue;
+            }
+
             Practice prac = new Practice(line);
             Game g;
             if ((g = findAssociatedGame(prac, data.getActivities())) != null) {
@@ -87,7 +127,18 @@ public class Setup {
         }
 
         // Not Compatible
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.isEmpty()) {
+            line = sc.nextLine().trim();
+
+            if (line.equalsIgnoreCase("Not compatible:")) {
+                continue;
+            }
+            if (line.equalsIgnoreCase("Unwanted:")) {
+                break;
+            }
+            if (line.isEmpty()) {
+                continue;
+            }
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
@@ -100,8 +151,21 @@ public class Setup {
         }
 
         // Unwanted
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.isEmpty()) {
+            line = sc.nextLine().trim();
+
+            if (line.equalsIgnoreCase("Unwanted:")) {
+                continue;
+            }
+            if (line.equalsIgnoreCase("Preferences:")) {
+                break;
+            }
+            if (line.isEmpty()) {
+                continue;
+            }
+
             line = line.replaceAll("\\s{2,}", " ").trim();
+            System.out.println(line);
 
             String[] split = line.split(",");
 
@@ -114,7 +178,19 @@ public class Setup {
         }
 
         // Preferences
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.isEmpty()) {
+            line = sc.nextLine().trim();
+
+            if (line.equalsIgnoreCase("Preferences:")) {
+                continue;
+            }
+            if (line.equalsIgnoreCase("Pair:")) {
+                break;
+            }
+            if (line.isEmpty()) {
+                continue;
+            }
+
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
@@ -132,7 +208,19 @@ public class Setup {
         }
 
         // Pairs
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.isEmpty()) {
+            line = sc.nextLine().trim();
+
+            if (line.equalsIgnoreCase("Pair:")) {
+                continue;
+            }
+            if (line.equalsIgnoreCase("Partial assignments:")) {
+                break;
+            }
+            if (line.isEmpty()) {
+                continue;
+            }
+
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 
@@ -147,7 +235,16 @@ public class Setup {
         }
 
         // Partials
-        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":")) {
+        while (sc.hasNextLine() && !(line = sc.nextLine().trim()).endsWith(":") && !line.isEmpty()) {
+            line = sc.nextLine().trim();
+
+            if (line.equalsIgnoreCase("Partial assignments:")) {
+                continue;
+            }
+            if (line.isEmpty()) {
+                break;
+            }
+
             line = line.replaceAll("\\s{2,}", " ").trim();
             String[] split = line.split(",");
 

@@ -105,24 +105,9 @@ public class ANode {
     public int eval_minfilled(int gamePenalty, int pracPenalty) {
         int min = 0;
         for (Slot s : slots) {
-            // System.out.println("This min: " + s.getMin());
-            // if (!(s.getMin() == 0)) {
-            if (s.isGame()) {
-                // System.out.print("This min: " + s.getMin());
-                if ((s.getMin() - s.getActivities().size()) > min) {
-                    min = (s.getMin() - s.getActivities().size());
-                }
-
-                // System.out.print("This min: " + s.getMin());
-            } else {
-                // System.out.print("This min: " + s.getMin());
-                if ((s.getMin() - s.getActivities().size()) > min) {
-                    min = (s.getMin() - s.getActivities().size());
-                }
-                // System.out.print("This min: " + s.getMin());
+            if ((s.getMin() - s.getActivities().size()) > min) {
+                min = (s.getMin() - s.getActivities().size());
             }
-
-            // }
         }
         return min;
     }
@@ -132,8 +117,8 @@ public class ANode {
         for (Slot s : slots) {
             for (Activity a : s.getActivities()) {
                 if (!a.getPreference().isEmpty()) {
-                    for(Preference p : a.getPreference()) {
-                        if(p.getSlot().getDay() != s.getDay() || p.getSlot().getStartTime() != s.getStartTime()) {
+                    for (Preference p : a.getPreference()) {
+                        if (p.getSlot().getDay() != s.getDay() || p.getSlot().getStartTime() != s.getStartTime()) {
                             pref += p.getPreferenceValue();
                         }
                     }
@@ -141,25 +126,19 @@ public class ANode {
             }
         }
         return pref;
-//        return pref * penalty;
     }
 
     public int eval_pair(int penalty) {
         int pair = 0;
         for (Slot s : slots) {
             for (Activity a : s.getActivities()) {
-                if(!a.getPairs().isEmpty()) {
-                    for(Activity pa : a.getPairs()) {
+                if (!a.getPairs().isEmpty()) {
+                    for (Activity pa : a.getPairs()) {
                         if (!s.getActivities().contains(pa)) {
                             pair++;
                         }
                     }
                 }
-//                if (a.getPair() != null) {
-//                    if (!s.getActivities().contains(a.getPair())) {
-//                        pair++;
-//                    }
-//                }
             }
         }
         return (pair * penalty) / 2;
@@ -168,27 +147,16 @@ public class ANode {
     public int eval_secdiff(int penalty) {
         int secdiff = 0;
 
-        for(Slot s : slots) {
+        for (Slot s : slots) {
             Set<String> ageGroups = new HashSet<>();
-            for(Activity activity : s.getActivities()) {
-                if(!ageGroups.add(activity.getAgeGroup())) {
+            for (Activity activity : s.getActivities()) {
+                if (!ageGroups.add(activity.getAgeGroup())) {
                     secdiff++;
                     break;
                 }
             }
 
         }
-
-//        int secdiff = 0;
-//        for (Slot s : slots) {
-//            for (Activity a1 : s.getActivities()) {
-//                for (Activity a2 : s.getActivities()) {
-//                    if (a2.getAgeGroup().equals(a1.getAgeGroup()) && a1 != a2) {
-//                        secdiff++;
-//                    }
-//                }
-//            }
-//        }
         return (secdiff * penalty) / 2;
     }
 
